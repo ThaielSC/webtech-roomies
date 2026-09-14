@@ -1,0 +1,175 @@
+// --- ENUMS ---
+
+Enum property_type {
+  apartment
+  house
+}
+
+Enum listing_status {
+  draft
+  published
+  reserved
+  rented
+  withdrawn
+}
+
+Enum application_status {
+  pending
+  shortlisted
+  accepted
+  rejected
+  withdrawn
+}
+
+Enum visit_status {
+  proposed
+  confirmed
+  completed
+  cancelled
+}
+
+Enum report_status {
+  pending
+  reviewed
+  dismissed
+  action_taken
+}
+
+// --- TABLES ---
+
+// Registered users (hosts, seekers, and moderators)
+Table users {
+  id bigint [pk, increment]
+  email_address varchar [not null, unique]
+  password_digest varchar [not null]
+  first_name varchar [not null]
+  last_name varchar [not null]
+  phone_number varchar
+  is_moderator boolean [not null, default: false]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// Official catalog of neighborhoods (managed by moderators)
+Table neighborhoods {
+  id bigint [pk, increment]
+  name varchar [not null, unique]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// Official catalog of property amenities (managed by moderators)
+Table amenities {
+  id bigint [pk, increment]
+  name varchar [not null, unique]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// Physical residential properties owned by hosts
+Table properties {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  neighborhood_id bigint [not null, ref: > neighborhoods.id]
+  address varchar [not null]
+  property_type property_type [not null]
+  bedrooms_count smallint [not null]
+  bathrooms_count smallint [not null]
+  shared_spaces text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// Join table resolving Many-to-Many relationship between properties and amenities
+Table property_amenities {
+  id bigint [pk, increment]
+  property_id bigint [not null, ref: > properties.id]
+  amenity_id bigint [not null, ref: > amenities.id]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  indexes {
+    (property_id, amenity_id) [unique]
+  }
+}
+
+// Published or drafted rooms inside a property
+Table listings {
+  id bigint [pk, increment]
+  property_id bigint [not null, ref: > properties.id]
+  title varchar [not null]
+  monthly_rent decimal(8, 2) [not null]
+  deposit decimal(8, 2) [not null]
+  available_date date [not null]
+  minimum_stay_months smallint [not null]
+  is_furnished boolean [not null, default: false]
+  has_private_bathroom boolean [not null, default: false]
+  status listing_status [not null, default: 'draft']
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// Applications submitted by seekers to room listings
+Table applications {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  listing_id bigint [not null, ref: > listings.id]
+  message text [not null]
+  move_in_date date [not null]
+  intended_stay_months smallint [not null]
+  status application_status [not null, default: 'pending']
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  indexes {
+    (user_id, listing_id) [unique]
+  }
+}
+
+// In-person property visits coordinated for shortlisted applications
+Table visits {
+  id bigint [pk, increment]
+  application_id bigint [not null, ref: > applications.id]
+  date_time timestamp [not null]
+  status visit_status [not null, default: 'proposed']
+  notes text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// Public reviews left by seekers strictly after completed visits
+Table reviews {
+  id bigint [pk, increment]
+  visit_id bigint [not null, unique, ref: - visits.id]
+  property_id bigint [not null, ref: > properties.id]
+  user_id bigint [not null, ref: > users.id]
+  rating smallint [not null]
+  comment text [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+// Bookmarked listings saved by seekers for later reference
+Table saved_listings {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  listing_id bigint [not null, ref: > listings.id]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  indexes {
+    (user_id, listing_id) [unique]
+  }
+}
+
+// Moderation reports submitted against listings
+Table reports {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  listing_id bigint [not null, ref: > listings.id]
+  reason_category varchar [not null]
+  details text [not null]
+  status report_status [not null, default: 'pending']
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
