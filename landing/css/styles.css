@@ -1,0 +1,9 @@
+.hero {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
