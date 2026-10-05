@@ -304,12 +304,13 @@ prop_centro.amenities << [
 ]
 
 puts "=== Creando Publicaciones (Listings) en diversos estados ==="
+# Montos de arriendo y garantía expresados en UF.
 # Propiedad 1 (Providencia): 2 habitaciones en arriendo
 listing_prov_master = Listing.create!(
   property: prop_providencia,
   title: "Habitación principal en suite con walk-in closet en Providencia",
-  monthly_rent: 390000.00,
-  deposit: 390000.00,
+  monthly_rent: "9.75",
+  deposit: "9.75",
   available_date: Date.current + 7.days,
   minimum_stay_months: 6,
   is_furnished: true,
@@ -320,8 +321,8 @@ listing_prov_master = Listing.create!(
 listing_prov_single = Listing.create!(
   property: prop_providencia,
   title: "Habitación individual luminosa a pasos de Metro Manuel Montt",
-  monthly_rent: 310000.00,
-  deposit: 310000.00,
+  monthly_rent: "7.75",
+  deposit: "7.75",
   available_date: Date.current + 14.days,
   minimum_stay_months: 3,
   is_furnished: true,
@@ -333,8 +334,8 @@ listing_prov_single = Listing.create!(
 listing_nunoa_jardin = Listing.create!(
   property: prop_nunoa_casa,
   title: "Dormitorio amplio con salida directa al jardín en Ñuñoa",
-  monthly_rent: 320000.00,
-  deposit: 320000.00,
+  monthly_rent: "8.00",
+  deposit: "8.00",
   available_date: Date.current + 5.days,
   minimum_stay_months: 6,
   is_furnished: true,
@@ -345,8 +346,8 @@ listing_nunoa_jardin = Listing.create!(
 listing_nunoa_estudio = Listing.create!(
   property: prop_nunoa_casa,
   title: "Pieza silenciosa ideal para estudiante de postgrado en Ñuñoa",
-  monthly_rent: 280000.00,
-  deposit: 280000.00,
+  monthly_rent: "7.00",
+  deposit: "7.00",
   available_date: Date.current + 10.days,
   minimum_stay_months: 12,
   is_furnished: false,
@@ -358,8 +359,8 @@ listing_nunoa_estudio = Listing.create!(
 listing_lastarria = Listing.create!(
   property: prop_lastarria,
   title: "Habitación con balcón privado en pleno corazón de Barrio Lastarria",
-  monthly_rent: 360000.00,
-  deposit: 360000.00,
+  monthly_rent: "9.00",
+  deposit: "9.00",
   available_date: Date.current + 3.days,
   minimum_stay_months: 6,
   is_furnished: true,
@@ -371,8 +372,8 @@ listing_lastarria = Listing.create!(
 listing_las_condes_suite = Listing.create!(
   property: prop_las_condes,
   title: "Suite ejecutiva con baño privado y estacionamiento en Las Condes",
-  monthly_rent: 460000.00,
-  deposit: 460000.00,
+  monthly_rent: "11.50",
+  deposit: "11.50",
   available_date: Date.current + 20.days,
   minimum_stay_months: 6,
   is_furnished: true,
@@ -383,8 +384,8 @@ listing_las_condes_suite = Listing.create!(
 listing_las_condes_draft = Listing.create!(
   property: prop_las_condes,
   title: "Habitación secundaria en remodelación cerca de Metro Manquehue",
-  monthly_rent: 400000.00,
-  deposit: 400000.00,
+  monthly_rent: "10.00",
+  deposit: "10.00",
   available_date: Date.current + 45.days,
   minimum_stay_months: 6,
   is_furnished: false,
@@ -396,8 +397,8 @@ listing_las_condes_draft = Listing.create!(
 listing_italia_rented = Listing.create!(
   property: prop_italia,
   title: "Habitación con luz natural en casa de artistas de Barrio Italia",
-  monthly_rent: 330000.00,
-  deposit: 330000.00,
+  monthly_rent: "8.25",
+  deposit: "8.25",
   available_date: Date.current + 2.days,
   minimum_stay_months: 6,
   is_furnished: true,
@@ -409,8 +410,8 @@ listing_italia_rented = Listing.create!(
 listing_centro_withdrawn = Listing.create!(
   property: prop_centro,
   title: "Pieza acogedora frente a Parque Forestal",
-  monthly_rent: 290000.00,
-  deposit: 290000.00,
+  monthly_rent: "7.25",
+  deposit: "7.25",
   available_date: Date.current + 30.days,
   minimum_stay_months: 3,
   is_furnished: true,
