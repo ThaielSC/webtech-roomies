@@ -1,0 +1,59 @@
+<section class="container my-5">
+  <%= link_to "← Back to applications",
+              applications_path,
+              class: "btn btn-outline-secondary mb-4" %>
+
+  <h1>Application</h1>
+
+  <div class="card my-4">
+    <div class="card-body">
+      <h2 class="h4">Application details</h2>
+
+      <p>
+        <strong>Applicant:</strong>
+        <%= @application.user.full_name %>
+      </p>
+
+      <p>
+        <strong>Listing:</strong>
+        <%= link_to @application.listing.title,
+                    listing_path(@application.listing) %>
+      </p>
+
+      <p>
+        <strong>Move-in date:</strong>
+        <%= @application.move_in_date.strftime("%B %d, %Y") %>
+      </p>
+
+      <p>
+        <strong>Intended stay:</strong>
+        <%= @application.intended_stay_months %> months
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        <%= @application.status.humanize %>
+      </p>
+
+      <p>
+        <strong>Message:</strong>
+      </p>
+
+      <p>
+        <%= @application.message %>
+      </p>
+
+      <p class="text-muted mb-0">
+        Submitted <%= @application.created_at.strftime("%B %d, %Y") %>
+      </p>
+    </div>
+  </div>
+
+  <h2 class="h3">Listing</h2>
+
+  <div class="row">
+    <div class="col-md-6 col-lg-4">
+      <%= render "listings/listing", listing: @application.listing %>
+    </div>
+  </div>
+</section>

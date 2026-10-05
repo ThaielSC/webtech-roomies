@@ -1,0 +1,58 @@
+<section class="container py-5 text-center">
+  <div class="py-5">
+    <h1 class="display-4 fw-bold">Your perfect match</h1>
+
+    <p class="lead mb-4">
+      Find the right room, neighborhood, and roommate in Santiago.
+    </p>
+
+    <%= link_to "Find a room",
+                listings_path,
+                class: "btn btn-primary btn-lg" %>
+  </div>
+</section>
+
+<section class="container py-5">
+  <h2 class="text-center mb-4">Featured listings</h2>
+
+  <% if @featured_listings.any? %>
+    <div class="row g-4">
+      <% @featured_listings.each do |listing| %>
+        <div class="col-md-4">
+          <%= render "listings/listing", listing: listing %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center">
+      No listings available right now.
+    </p>
+  <% end %>
+</section>
+
+<section class="container py-5">
+  <h2 class="text-center mb-5">How it works</h2>
+
+  <div class="row text-center g-4">
+    <div class="col-md-4">
+      <h3 class="h5">1. Search</h3>
+      <p>
+        Browse available rooms and find one that matches your needs.
+      </p>
+    </div>
+
+    <div class="col-md-4">
+      <h3 class="h5">2. Apply</h3>
+      <p>
+        Send an application to the host of the room you're interested in.
+      </p>
+    </div>
+
+    <div class="col-md-4">
+      <h3 class="h5">3. Visit</h3>
+      <p>
+        Schedule a visit and see whether you've found your new home.
+      </p>
+    </div>
+  </div>
+</section>

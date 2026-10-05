@@ -1,0 +1,52 @@
+<section class="container my-5">
+  <h1 class="mb-4">Applications</h1>
+
+  <% if @applications.any? %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Listing</th>
+            <th>Move-in date</th>
+            <th>Stay</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @applications.each do |application| %>
+            <tr>
+              <td><%= application.user.full_name %></td>
+
+              <td>
+                <%= application.listing.title %>
+              </td>
+
+              <td>
+                <%= application.move_in_date.strftime("%B %d, %Y") %>
+              </td>
+
+              <td>
+                <%= application.intended_stay_months %> months
+              </td>
+
+              <td>
+                <%= application.status.humanize %>
+              </td>
+
+              <td>
+                <%= link_to "View",
+                            application_path(application),
+                            class: "btn btn-sm btn-primary" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p>No applications found.</p>
+  <% end %>
+</section>

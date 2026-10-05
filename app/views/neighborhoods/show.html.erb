@@ -1,0 +1,27 @@
+<section class="container my-5">
+  <%= link_to "← Back to neighborhoods",
+              neighborhoods_path,
+              class: "btn btn-outline-secondary mb-4" %>
+
+  <h1><%= @neighborhood.name %></h1>
+
+  <p class="text-muted">
+    <%= pluralize(@neighborhood.properties.count, "property") %>
+  </p>
+
+  <hr class="my-5">
+
+  <h2 class="h3">Listings in <%= @neighborhood.name %></h2>
+
+  <% if @neighborhood.listings.any? %>
+    <div class="row g-4">
+      <% @neighborhood.listings.each do |listing| %>
+        <div class="col-md-6 col-lg-4">
+          <%= render "listings/listing", listing: listing %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No listings found in this neighborhood.</p>
+  <% end %>
+</section>
