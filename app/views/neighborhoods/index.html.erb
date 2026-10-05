@@ -1,0 +1,29 @@
+<section class="container my-5">
+  <h1 class="mb-4">Neighborhoods</h1>
+
+  <% if @neighborhoods.any? %>
+    <div class="row g-4">
+      <% @neighborhoods.each do |neighborhood| %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title h5">
+                <%= neighborhood.name %>
+              </h2>
+
+              <p>
+                <%= pluralize(neighborhood.properties.count, "property") %>
+              </p>
+
+              <%= link_to "View neighborhood",
+                          neighborhood_path(neighborhood),
+                          class: "btn btn-primary" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No neighborhoods found.</p>
+  <% end %>
+</section>

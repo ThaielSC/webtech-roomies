@@ -1,0 +1,96 @@
+<section class="container my-5">
+  <%= link_to "← Back to properties",
+              properties_path,
+              class: "btn btn-outline-secondary mb-4" %>
+
+  <h1><%= @property.address %></h1>
+
+  <div class="card my-4">
+    <div class="card-body">
+      <h2 class="h4">Property details</h2>
+
+      <p>
+        <strong>Neighborhood:</strong>
+        <%= @property.neighborhood.name %>
+      </p>
+
+      <p>
+        <strong>Type:</strong>
+        <%= @property.property_type.humanize %>
+      </p>
+
+      <p>
+        <strong>Bedrooms:</strong>
+        <%= @property.bedrooms_count %>
+      </p>
+
+      <p>
+        <strong>Bathrooms:</strong>
+        <%= @property.bathrooms_count %>
+      </p>
+
+      <p>
+        <strong>Shared spaces:</strong>
+        <%= @property.shared_spaces %>
+      </p>
+
+      <p>
+        <strong>Host:</strong>
+        <%= @property.user.full_name %>
+      </p>
+    </div>
+  </div>
+
+  <h2 class="h3 mt-5">Amenities</h2>
+
+  <% if @property.amenities.any? %>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <% @property.amenities.each do |amenity| %>
+        <span class="badge text-bg-secondary">
+          <%= amenity.name %>
+        </span>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No amenities listed.</p>
+  <% end %>
+
+  <hr class="my-5">
+
+  <h2 class="h3">Listings</h2>
+
+  <% if @property.listings.any? %>
+    <div class="row g-4">
+      <% @property.listings.each do |listing| %>
+        <div class="col-md-6 col-lg-4">
+          <%= render "listings/listing", listing: listing %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>This property has no listings.</p>
+  <% end %>
+
+  <hr class="my-5">
+
+  <h2 class="h3">Reviews</h2>
+
+  <% if @property.reviews.any? %>
+    <% @property.reviews.each do |review| %>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p class="mb-1">
+            <strong><%= review.user.full_name %></strong>
+            — <%= review.rating %>/5
+          </p>
+
+          <p class="mb-0">
+            <%= review.comment %>
+          </p>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No reviews yet.</p>
+  <% end %>
+</section>

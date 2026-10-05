@@ -1,0 +1,129 @@
+<section class="container my-5">
+  <%= link_to "← Back to listings",
+              listings_path,
+              class: "btn btn-outline-secondary mb-4" %>
+
+  <h1><%= @listing.title %></h1>
+
+  <div class="row mt-4">
+    <div class="col-lg-8">
+      <h2 class="h4">Room details</h2>
+
+      <p>
+        <strong>Monthly rent:</strong>
+        <%= number_to_currency(@listing.monthly_rent, unit: "$", precision: 0) %> CLP
+      </p>
+
+      <p>
+        <strong>Deposit:</strong>
+        <%= number_to_currency(@listing.deposit, unit: "$", precision: 0) %> CLP
+      </p>
+
+      <p>
+        <strong>Available from:</strong>
+        <%= @listing.available_date.strftime("%B %d, %Y") %>
+      </p>
+
+      <p>
+        <strong>Minimum stay:</strong>
+        <%= @listing.minimum_stay_months %> months
+      </p>
+
+      <p>
+        <strong>Furnished:</strong>
+        <%= @listing.is_furnished? ? "Yes" : "No" %>
+      </p>
+
+      <p>
+        <strong>Private bathroom:</strong>
+        <%= @listing.has_private_bathroom? ? "Yes" : "No" %>
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        <%= @listing.status.humanize %>
+      </p>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h4">Property</h2>
+
+          <p>
+            <strong>Address:</strong>
+            <%= @listing.property.address %>
+          </p>
+
+          <p>
+            <strong>Neighborhood:</strong>
+            <%= @listing.neighborhood.name %>
+          </p>
+
+          <p>
+            <strong>Type:</strong>
+            <%= @listing.property.property_type.humanize %>
+          </p>
+
+          <p>
+            <strong>Bedrooms:</strong>
+            <%= @listing.property.bedrooms_count %>
+          </p>
+
+          <p>
+            <strong>Bathrooms:</strong>
+            <%= @listing.property.bathrooms_count %>
+          </p>
+
+          <p>
+            <strong>Shared spaces:</strong>
+            <%= @listing.property.shared_spaces %>
+          </p>
+
+          <%= link_to "View property",
+                      property_path(@listing.property),
+                      class: "btn btn-outline-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-5">
+
+  <h2 class="h3">Amenities</h2>
+
+  <% if @listing.property.amenities.any? %>
+    <div class="d-flex flex-wrap gap-2">
+      <% @listing.property.amenities.each do |amenity| %>
+        <span class="badge text-bg-secondary">
+          <%= amenity.name %>
+        </span>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No amenities listed.</p>
+  <% end %>
+
+  <hr class="my-5">
+
+  <h2 class="h3">Reviews</h2>
+
+  <% if @listing.reviews.any? %>
+    <% @listing.reviews.each do |review| %>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p class="mb-1">
+            <strong><%= review.user.full_name %></strong>
+            — <%= review.rating %>/5
+          </p>
+
+          <p class="mb-0">
+            <%= review.comment %>
+          </p>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No reviews yet.</p>
+  <% end %>
+</section>

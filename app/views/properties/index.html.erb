@@ -1,0 +1,45 @@
+<section class="container my-5">
+  <h1 class="mb-4">Properties</h1>
+
+  <% if @properties.any? %>
+    <div class="row g-4">
+      <% @properties.each do |property| %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title h5">
+                <%= property.address %>
+              </h2>
+
+              <p>
+                <strong>Neighborhood:</strong>
+                <%= property.neighborhood.name %>
+              </p>
+
+              <p>
+                <strong>Type:</strong>
+                <%= property.property_type.humanize %>
+              </p>
+
+              <p>
+                <strong>Bedrooms:</strong>
+                <%= property.bedrooms_count %>
+              </p>
+
+              <p>
+                <strong>Bathrooms:</strong>
+                <%= property.bathrooms_count %>
+              </p>
+
+              <%= link_to "View property",
+                          property_path(property),
+                          class: "btn btn-primary" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No properties found.</p>
+  <% end %>
+</section>
