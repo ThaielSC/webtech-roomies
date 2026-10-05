@@ -1,6 +1,6 @@
 class CreateListings < ActiveRecord::Migration[8.1]
   def change
-    create_enum :listing_status, ["draft", "published", "reserved", "rented", "withdrawn"]
+    create_enum :listing_status, [ "draft", "published", "reserved", "rented", "withdrawn" ]
 
     create_table :listings do |t|
       t.references :property, null: false, foreign_key: true
