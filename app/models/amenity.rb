@@ -1,8 +1,6 @@
 class Amenity < ApplicationRecord
-  # Asociaciones (Muchos a Muchos con Property a través de PropertyAmenity)
   has_many :property_amenities, dependent: :destroy
   has_many :properties, through: :property_amenities
 
-  # Validaciones
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 end

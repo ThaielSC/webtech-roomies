@@ -1,5 +1,4 @@
 class Listing < ApplicationRecord
-  # Asociaciones
   belongs_to :property
   has_one :neighborhood, through: :property
   has_one :host, through: :property, source: :user
@@ -8,20 +7,16 @@ class Listing < ApplicationRecord
   has_many :reports, dependent: :destroy
   has_many :reviews, through: :property
 
-  # Enum del ciclo de vida
   enum :status, { draft: "draft", published: "published", reserved: "reserved", rented: "rented", withdrawn: "withdrawn" }
 
-  # Validaciones estándar
   validates :title, presence: true
   validates :monthly_rent, presence: true, numericality: { greater_than: 0 }
   validates :deposit, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :available_date, presence: true
   validates :minimum_stay_months, presence: true, numericality: { only_integer: true, greater_than: 0 }
 
-  # Validación personalizada: fecha de disponibilidad no puede ser en el pasado
   validate :available_date_cannot_be_in_the_past, on: :create
 
-  # Scopes requeridos por la entrega
   scope :published, -> { where(status: :published) }
   scope :available_from, ->(date) { where("available_date >= ?", date) if date.present? }
   scope :under_rent, ->(max_rent) { where("monthly_rent <= ?", max_rent) if max_rent.present? }
