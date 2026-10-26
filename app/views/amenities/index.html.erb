@@ -1,0 +1,6 @@
+<section class="container my-5">
+  <div class="d-flex justify-content-between"><h1>Amenities</h1><%= link_to "New amenity", new_amenity_path, class: "btn btn-primary" %></div>
+  <ul class="list-group mt-3"><% @amenities.each do |amenity| %>
+    <li class="list-group-item d-flex justify-content-between"><%= link_to amenity.name, amenity_path(amenity) %><%= button_to "Delete", amenity_path(amenity), method: :delete, class: "btn btn-sm btn-outline-danger" %></li>
+  <% end %></ul>
+</section>
