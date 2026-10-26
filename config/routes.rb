@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root "home#index"
+  patch "current_user", to: "application#switch_user", as: :current_user
 
   resources :neighborhoods
   resources :amenities
@@ -7,9 +8,20 @@ Rails.application.routes.draw do
 
   resources :listings do
     resources :applications, only: [:create]
+    member do
+      patch :publish
+      patch :withdraw
+      patch :mark_rented
+    end
   end
 
-  resources :applications, only: [:index, :show, :edit, :update, :destroy]
+  resources :applications, only: [:index, :show, :edit, :update, :destroy] do
+    member do
+      patch :shortlist
+      patch :reject
+      patch :accept
+    end
+  end
 
   resources :visits do
     member do

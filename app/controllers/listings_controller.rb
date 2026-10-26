@@ -1,12 +1,14 @@
 class ListingsController < ApplicationController
-  before_action :set_listing, only: [:show, :edit, :update, :destroy]
+  before_action :set_listing, only: [:show, :edit, :update, :destroy, :publish, :withdraw, :mark_rented]
+  before_action :ensure_host, only: [:edit, :update, :destroy, :publish, :withdraw, :mark_rented]
   before_action :load_properties, only: [:new, :create, :edit, :update]
 
   def index
-    @listings = Listing.includes(property: :neighborhood).all
+    @listings = Listing.visible_to(current_user).includes(property: :neighborhood)
   end
 
   def show
+    @application = @listing.applications.find_by(user: current_user) || @listing.applications.build
   end
 
   def new
@@ -16,6 +18,7 @@ class ListingsController < ApplicationController
   def create
     @listing = Listing.new(listing_params)
     @listing.status = :draft
+    @listing.property = Property.where(user: current_user).find_by(id: @listing.property_id)
 
     if @listing.save
       redirect_to @listing, notice: "Listing created successfully."
@@ -23,6 +26,27 @@ class ListingsController < ApplicationController
       flash.now[:alert] = "Could not create listing."
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def publish
+    @listing.publish!
+    redirect_to @listing, notice: "Listing published successfully."
+  rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
+    redirect_to @listing, alert: error.message
+  end
+
+  def withdraw
+    @listing.withdraw!
+    redirect_to @listing, notice: "Listing withdrawn successfully."
+  rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
+    redirect_to @listing, alert: error.message
+  end
+
+  def mark_rented
+    @listing.mark_rented!
+    redirect_to @listing, notice: "Listing marked as rented."
+  rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
+    redirect_to @listing, alert: error.message
   end
 
   def edit
@@ -50,12 +74,8 @@ class ListingsController < ApplicationController
 
   private
 
-  def set_listing
-    @listing = Listing.find(params[:id])
-  end
-
   def load_properties
-    @properties = Property.includes(:neighborhood).order(:address)
+    @properties = Property.where(user: current_user).includes(:neighborhood).order(:address)
   end
 
   def listing_params
@@ -72,5 +92,15 @@ class ListingsController < ApplicationController
       :house_rules,
       photos: []
     )
+  end
+
+  def set_listing
+    @listing = Listing.visible_to(current_user).find(params[:id])
+  end
+
+  def ensure_host
+    return if @listing.property.user_id == current_user&.id
+
+    redirect_to @listing, alert: "Only the host can manage this listing."
   end
 end

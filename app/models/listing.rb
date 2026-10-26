@@ -38,6 +38,19 @@ class Listing < ApplicationRecord
 
   # Scopes requeridos por la entrega
   scope :published, -> { where(status: :published) }
+  scope :visible_to, ->(user) { joins(:property).where(status: :published).or(joins(:property).where(status: :draft, properties: { user_id: user&.id })) }
+
+  def publish!
+    transition_to!(:published, from: :draft)
+  end
+
+  def withdraw!
+    transition_to!(:withdrawn, from: %i[draft published reserved])
+  end
+
+  def mark_rented!
+    transition_to!(:rented, from: :reserved)
+  end
 
   scope :available_from, ->(date) {
     where("available_date >= ?", date) if date.present?
@@ -52,6 +65,12 @@ class Listing < ApplicationRecord
   }
 
   private
+
+  def transition_to!(target, from:)
+    raise ActiveRecord::RecordNotSaved, "Invalid listing state transition" unless from.any? { |state| public_send("#{state}?") }
+
+    update!(status: target)
+  end
 
   def available_date_cannot_be_in_the_past
     if available_date.present? && available_date < Date.current
