@@ -1,9 +1,14 @@
 class ApplicationsController < ApplicationController
   before_action :set_application, only: [:show, :edit, :update, :destroy, :shortlist, :reject, :accept]
+  before_action :ensure_author, only: [:edit, :update, :destroy]
+  before_action :ensure_host, only: [:shortlist, :reject, :accept]
 
   def index
-    @applications = Application.includes(:user, listing: :property)
+    @applications = Application.left_joins(listing: :property)
+                               .where("properties.user_id = :user_id OR applications.user_id = :user_id", user_id: current_user&.id)
+                               .includes(:user, listing: :property)
                                .order(created_at: :desc)
+    @pending_count = host_application_scope.pending.count
   end
 
   def show
@@ -51,9 +56,11 @@ class ApplicationsController < ApplicationController
   def destroy
     @application.withdraw!(actor: current_user)
 
-    redirect_to applications_path,
+    redirect_to @application.listing,
                 notice: "Application withdrawn successfully.",
                 status: :see_other
+  rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
+    redirect_to @application, alert: error.message
   end
 
   def shortlist
@@ -83,6 +90,22 @@ class ApplicationsController < ApplicationController
     @application = Application.find(params[:id])
   end
 
+  def ensure_author
+    return if @application.user_id == current_user&.id
+
+    redirect_to @application, alert: "Only the applicant can manage this application."
+  end
+
+  def ensure_host
+    return if @application.listing.property.user_id == current_user&.id
+
+    redirect_to applications_path, alert: "Only the host can answer this application."
+  end
+
+  def host_application_scope
+    Application.joins(listing: :property).where(properties: { user_id: current_user&.id })
+  end
+
   def application_params
     params.require(:application).permit(
       :message,
@@ -96,6 +119,7 @@ class ApplicationsController < ApplicationController
       format.html { redirect_to applications_path, notice: message }
       format.turbo_stream do
         @applications = Application.where(listing_id: @application.listing_id)
+        @pending_count = host_application_scope.pending.count
         flash.now[:notice] = message
         render :status_change
       end

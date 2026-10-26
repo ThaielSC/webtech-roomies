@@ -21,8 +21,11 @@
                         turbo_confirm: "Are you sure you want to delete this listing?"
                       }
                     } %>
+      <% end %>
     </div>
   </div>
+
+  <%= render "applications/block", listing: @listing, application: @application %>
 
   <%# PHOTOGRAPH GALLERY %>
 
