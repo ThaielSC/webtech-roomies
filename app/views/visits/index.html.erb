@@ -1,0 +1,95 @@
+<section class="container my-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Visits</h1>
+
+    <%= link_to "Propose visit",
+                new_visit_path,
+                class: "btn btn-success" %>
+  </div>
+
+  <% if @visits.any? %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Listing</th>
+            <th>Date and time</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @visits.each do |visit| %>
+            <tr>
+              <td>
+                <%= visit.application.user.full_name %>
+              </td>
+
+              <td>
+                <%= link_to visit.application.listing.title,
+                            listing_path(visit.application.listing) %>
+              </td>
+
+              <td>
+                <%= visit.date_time.strftime("%B %d, %Y at %H:%M") %>
+              </td>
+
+              <td>
+                <span class="badge text-bg-secondary">
+                  <%= visit.status.humanize %>
+                </span>
+              </td>
+
+              <td>
+                <div class="d-flex flex-wrap gap-2">
+
+                  <%= link_to "View",
+                              visit_path(visit),
+                              class: "btn btn-sm btn-primary" %>
+
+                  <% if visit.proposed? || visit.confirmed? %>
+                    <%= link_to "Reschedule",
+                                edit_visit_path(visit),
+                                class: "btn btn-sm btn-outline-primary" %>
+                  <% end %>
+
+                  <% if visit.proposed? %>
+                    <%= button_to "Confirm",
+                                  confirm_visit_path(visit),
+                                  method: :patch,
+                                  class: "btn btn-sm btn-outline-success" %>
+                  <% end %>
+
+                  <% if visit.proposed? || visit.confirmed? %>
+                    <%= button_to "Cancel",
+                                  cancel_visit_path(visit),
+                                  method: :patch,
+                                  class: "btn btn-sm btn-outline-warning" %>
+                  <% end %>
+
+                  <% if visit.confirmed? %>
+                    <%= button_to "Complete",
+                                  complete_visit_path(visit),
+                                  method: :patch,
+                                  class: "btn btn-sm btn-outline-success" %>
+                  <% end %>
+
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      No visits have been scheduled.
+    </div>
+  <% end %>
+
+</section>

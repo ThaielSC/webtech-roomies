@@ -1,0 +1,71 @@
+<section class="container my-5">
+
+  <%= link_to "← Back to reviews",
+              reviews_path,
+              class: "btn btn-outline-secondary mb-4" %>
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <h1 class="mb-0">Review</h1>
+
+    <div class="d-flex gap-2">
+      <%= link_to "Edit review",
+                  edit_review_path(@review),
+                  class: "btn btn-outline-primary" %>
+
+      <%= button_to "Delete review",
+                    review_path(@review),
+                    method: :delete,
+                    class: "btn btn-outline-danger",
+                    form: {
+                      data: {
+                        turbo_confirm: "Are you sure you want to delete this review?"
+                      }
+                    } %>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+
+      <h2 class="h4">
+        <%= link_to @review.property.address,
+                    property_path(@review.property) %>
+      </h2>
+
+      <p>
+        <strong>Reviewer:</strong>
+        <%= @review.user.full_name %>
+      </p>
+
+      <p>
+        <strong>Rating:</strong>
+
+        <span class="text-warning fs-4">
+          <%= "★" * @review.rating %>
+        </span>
+
+        <span class="text-muted fs-4">
+          <%= "☆" * (5 - @review.rating) %>
+        </span>
+      </p>
+
+      <p>
+        <strong>Comment:</strong>
+      </p>
+
+      <p>
+        <%= simple_format(@review.comment) %>
+      </p>
+
+      <p class="text-muted mb-0">
+        Submitted <%= @review.created_at.strftime("%B %d, %Y") %>
+      </p>
+
+    </div>
+  </div>
+
+  <%= link_to "View associated visit",
+              visit_path(@review.visit),
+              class: "btn btn-outline-secondary" %>
+
+</section>

@@ -1,0 +1,38 @@
+<section class="container my-5">
+  <h1>Edit application</h1>
+
+  <%= form_with model: @application do |form| %>
+    <% if @application.errors.any? %>
+      <div class="alert alert-danger">
+        <%= @application.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
+
+    <div class="mb-3">
+      <%= form.label :message, class: "form-label" %>
+      <%= form.text_area :message,
+            class: "form-control",
+            rows: 4,
+            required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :move_in_date, class: "form-label" %>
+      <%= form.date_field :move_in_date,
+            class: "form-control",
+            required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :intended_stay_months, class: "form-label" %>
+      <%= form.number_field :intended_stay_months,
+            class: "form-control",
+            min: 1,
+            required: true %>
+    </div>
+
+    <%= form.submit "Update application", class: "btn btn-primary" %>
+    <%= link_to "Cancel", application_path(@application),
+          class: "btn btn-outline-secondary" %>
+  <% end %>
+</section>

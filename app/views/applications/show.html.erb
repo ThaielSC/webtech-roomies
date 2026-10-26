@@ -3,7 +3,27 @@
               applications_path,
               class: "btn btn-outline-secondary mb-4" %>
 
-  <h1>Application</h1>
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <h1 class="mb-0">Application</h1>
+
+    <div class="d-flex flex-wrap gap-2">
+      <% if @application.pending? || @application.shortlisted? %>
+        <%= link_to "Edit application",
+                    edit_application_path(@application),
+                    class: "btn btn-outline-primary" %>
+
+        <%= button_to "Withdraw application",
+                      application_path(@application),
+                      method: :delete,
+                      class: "btn btn-outline-danger",
+                      form: {
+                        data: {
+                          turbo_confirm: "Are you sure you want to withdraw this application?"
+                        }
+                      } %>
+      <% end %>
+    </div>
+  </div>
 
   <div class="card my-4">
     <div class="card-body">
@@ -32,7 +52,9 @@
 
       <p>
         <strong>Status:</strong>
-        <%= @application.status.humanize %>
+        <span class="badge text-bg-secondary">
+          <%= @application.status.humanize %>
+        </span>
       </p>
 
       <p>
@@ -56,4 +78,52 @@
       <%= render "listings/listing", listing: @application.listing %>
     </div>
   </div>
+
+  <hr class="my-5">
+
+  <%# VISITS SECTION %>
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <h2 class="h3 mb-0">Visits</h2>
+
+    <% if @application.shortlisted? %>
+      <%= link_to "Propose visit",
+                  new_visit_path(application_id: @application.id),
+                  class: "btn btn-success" %>
+    <% end %>
+  </div>
+
+  <% if @application.visits.any? %>
+    <div class="list-group mb-4">
+      <% @application.visits.order(date_time: :asc).each do |visit| %>
+        <%= link_to visit_path(visit),
+                    class: "list-group-item list-group-item-action" do %>
+
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <strong>
+                <%= visit.date_time.strftime("%B %d, %Y at %H:%M") %>
+              </strong>
+
+              <% if visit.notes.present? %>
+                <p class="text-muted small mb-0 mt-1">
+                  <%= truncate(visit.notes, length: 100) %>
+                </p>
+              <% end %>
+            </div>
+
+            <span class="badge text-bg-secondary">
+              <%= visit.status.humanize %>
+            </span>
+          </div>
+
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      No visits have been scheduled for this application.
+    </div>
+  <% end %>
+
 </section>

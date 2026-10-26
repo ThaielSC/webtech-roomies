@@ -1,0 +1,42 @@
+<%= form_with model: [listing, application] do |form| %>
+
+  <% if application.errors.any? %>
+    <div class="alert alert-danger">
+      <strong>Please correct the following errors:</strong>
+      <ul class="mb-0">
+        <% application.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :message, "Message to the host", class: "form-label" %>
+    <%= form.text_area :message,
+          class: "form-control",
+          rows: 4,
+          placeholder: "Introduce yourself and explain why you're interested...",
+          required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :move_in_date, "Preferred move-in date", class: "form-label" %>
+    <%= form.date_field :move_in_date,
+          class: "form-control",
+          min: Date.current,
+          required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :intended_stay_months, "Intended stay (months)",
+          class: "form-label" %>
+    <%= form.number_field :intended_stay_months,
+          class: "form-control",
+          min: 1,
+          required: true %>
+  </div>
+
+  <%= form.submit "Submit application", class: "btn btn-success" %>
+
+<% end %>

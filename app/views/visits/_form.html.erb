@@ -1,0 +1,56 @@
+<%= form_with model: visit do |form| %>
+
+  <% if visit.errors.any? %>
+    <div class="alert alert-danger">
+      <strong>Please correct the following errors:</strong>
+
+      <ul class="mb-0">
+        <% visit.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :application_id, "Application", class: "form-label" %>
+
+    <%= form.collection_select :application_id,
+          @applications,
+          :id,
+          :id,
+          { prompt: "Select an application" },
+          { class: "form-select", required: true } %>
+
+    <div class="form-text">
+      Select the application associated with this visit.
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :date_time, "Visit date and time", class: "form-label" %>
+
+    <%= form.datetime_local_field :date_time,
+          class: "form-control",
+          min: Time.current.strftime("%Y-%m-%dT%H:%M"),
+          required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :notes, "Notes", class: "form-label" %>
+
+    <%= form.text_area :notes,
+          class: "form-control",
+          rows: 4,
+          placeholder: "Meeting point, instructions, or additional information..." %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+
+    <%= link_to "Cancel",
+          visit.persisted? ? visit_path(visit) : visits_path,
+          class: "btn btn-outline-secondary" %>
+  </div>
+
+<% end %>

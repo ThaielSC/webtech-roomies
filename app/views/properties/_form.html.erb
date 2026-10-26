@@ -1,0 +1,93 @@
+<%= form_with model: property do |form| %>
+
+  <% if property.errors.any? %>
+    <div class="alert alert-danger">
+      <strong>Please correct the following errors:</strong>
+      <ul class="mb-0">
+        <% property.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :user_id, "Host", class: "form-label" %>
+    <%= form.collection_select :user_id, @users, :id, :full_name,
+          { prompt: "Select a host" },
+          { class: "form-select", required: true } %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :address, class: "form-label" %>
+    <%= form.text_field :address,
+          class: "form-control",
+          placeholder: "e.g. Av. Providencia 1234",
+          required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :neighborhood_id, "Neighborhood", class: "form-label" %>
+    <%= form.collection_select :neighborhood_id,
+          @neighborhoods, :id, :name,
+          { prompt: "Select a neighborhood" },
+          { class: "form-select", required: true } %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :property_type, "Property type", class: "form-label" %>
+    <%= form.select :property_type,
+          Property.property_types.keys.map { |type| [type.humanize, type] },
+          { prompt: "Select property type" },
+          { class: "form-select", required: true } %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= form.label :bedrooms_count, "Bedrooms", class: "form-label" %>
+      <%= form.number_field :bedrooms_count,
+            class: "form-control",
+            min: 0,
+            required: true %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= form.label :bathrooms_count, "Bathrooms", class: "form-label" %>
+      <%= form.number_field :bathrooms_count,
+            class: "form-control",
+            min: 0,
+            required: true %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :shared_spaces, "Shared spaces", class: "form-label" %>
+    <%= form.text_area :shared_spaces,
+          class: "form-control",
+          rows: 3,
+          placeholder: "Kitchen, living room, balcony..." %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :amenity_ids, "Amenities", class: "form-label" %>
+
+    <%= form.collection_check_boxes :amenity_ids,
+          @amenities, :id, :name do |checkbox| %>
+
+      <div class="form-check">
+        <%= checkbox.check_box(class: "form-check-input") %>
+        <%= checkbox.label(class: "form-check-label") %>
+      </div>
+
+    <% end %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+
+    <%= link_to "Cancel",
+          properties_path,
+          class: "btn btn-outline-secondary" %>
+  </div>
+
+<% end %>
