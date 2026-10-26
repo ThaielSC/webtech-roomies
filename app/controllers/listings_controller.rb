@@ -53,7 +53,15 @@ class ListingsController < ApplicationController
   end
 
   def update
-    if @listing.update(listing_params)
+    attributes = listing_params
+    property_id = attributes[:property_id].presence || @listing.property_id
+    unless @properties.exists?(id: property_id)
+      @listing.errors.add(:property, "must belong to the current host")
+      flash.now[:alert] = "Could not update listing."
+      return render :edit, status: :unprocessable_entity
+    end
+
+    if @listing.update(attributes)
       redirect_to @listing, notice: "Listing updated successfully."
     else
       flash.now[:alert] = "Could not update listing."

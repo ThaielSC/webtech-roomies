@@ -31,6 +31,9 @@ class Listing < ApplicationRecord
   validates :minimum_stay_months, presence: true,
             numericality: { only_integer: true, greater_than: 0 }
 
+  before_update :status_changes_must_use_lifecycle_methods, if: :will_save_change_to_status?
+
+  validate :new_listings_must_start_as_draft, on: :create
   validate :available_date_cannot_be_in_the_past, on: :create
 
   # Validación de fotografías
@@ -38,7 +41,7 @@ class Listing < ApplicationRecord
 
   # Scopes requeridos por la entrega
   scope :published, -> { where(status: :published) }
-  scope :visible_to, ->(user) { joins(:property).where(status: :published).or(joins(:property).where(status: :draft, properties: { user_id: user&.id })) }
+  scope :visible_to, ->(user) { joins(:property).where(status: :published).or(joins(:property).where(properties: { user_id: user&.id })) }
 
   def publish!
     transition_to!(:published, from: :draft)
@@ -50,6 +53,10 @@ class Listing < ApplicationRecord
 
   def mark_rented!
     transition_to!(:rented, from: :reserved)
+  end
+
+  def reserve!
+    transition_to!(:reserved, from: :published)
   end
 
   scope :available_from, ->(date) {
@@ -67,9 +74,29 @@ class Listing < ApplicationRecord
   private
 
   def transition_to!(target, from:)
-    raise ActiveRecord::RecordNotSaved, "Invalid listing state transition" unless from.any? { |state| public_send("#{state}?") }
+    previous_status = persisted? ? attribute_in_database("status") : status
+    allowed_previous_states = Array(from).map(&:to_s)
+    unless allowed_previous_states.include?(previous_status.to_s)
+      raise ActiveRecord::RecordNotSaved, "Invalid listing state transition"
+    end
 
+    @allow_status_transition = true
     update!(status: target)
+  ensure
+    @allow_status_transition = false
+  end
+
+  def status_changes_must_use_lifecycle_methods
+    return if @allow_status_transition
+
+    errors.add(:status, "must be changed through a listing lifecycle action")
+    throw :abort
+  end
+
+  def new_listings_must_start_as_draft
+    return if draft?
+
+    errors.add(:status, "must start as draft")
   end
 
   def available_date_cannot_be_in_the_past

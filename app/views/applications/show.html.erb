@@ -57,6 +57,10 @@
         </span>
       </p>
 
+      <% if @application.shortlisted? && @application.listing.property.user_id == current_user&.id && @application.visits.empty? %>
+        <%= link_to "Propose a visit", new_visit_path(application_id: @application.id), class: "btn btn-success" %>
+      <% end %>
+
       <p>
         <strong>Message:</strong>
       </p>

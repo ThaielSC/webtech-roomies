@@ -314,8 +314,7 @@ listing_prov_master = Listing.create!(
   available_date: Date.current + 7.days,
   minimum_stay_months: 6,
   is_furnished: true,
-  has_private_bathroom: true,
-  status: :published
+  has_private_bathroom: true
 )
 
 listing_prov_single = Listing.create!(
@@ -326,8 +325,7 @@ listing_prov_single = Listing.create!(
   available_date: Date.current + 14.days,
   minimum_stay_months: 3,
   is_furnished: true,
-  has_private_bathroom: false,
-  status: :published
+  has_private_bathroom: false
 )
 
 # Propiedad 2 (Ñuñoa casona): 2 habitaciones (una reservada y una publicada)
@@ -339,8 +337,7 @@ listing_nunoa_jardin = Listing.create!(
   available_date: Date.current + 5.days,
   minimum_stay_months: 6,
   is_furnished: true,
-  has_private_bathroom: false,
-  status: :published
+  has_private_bathroom: false
 )
 
 listing_nunoa_estudio = Listing.create!(
@@ -351,8 +348,7 @@ listing_nunoa_estudio = Listing.create!(
   available_date: Date.current + 10.days,
   minimum_stay_months: 12,
   is_furnished: false,
-  has_private_bathroom: false,
-  status: :reserved
+  has_private_bathroom: false
 )
 
 # Propiedad 3 (Barrio Lastarria): Habitación muy cotizada (competencia de postulaciones)
@@ -364,8 +360,7 @@ listing_lastarria = Listing.create!(
   available_date: Date.current + 3.days,
   minimum_stay_months: 6,
   is_furnished: true,
-  has_private_bathroom: false,
-  status: :published
+  has_private_bathroom: false
 )
 
 # Propiedad 4 (Las Condes): Una publicada y una en borrador (draft)
@@ -377,8 +372,7 @@ listing_las_condes_suite = Listing.create!(
   available_date: Date.current + 20.days,
   minimum_stay_months: 6,
   is_furnished: true,
-  has_private_bathroom: true,
-  status: :published
+  has_private_bathroom: true
 )
 
 listing_las_condes_draft = Listing.create!(
@@ -389,8 +383,7 @@ listing_las_condes_draft = Listing.create!(
   available_date: Date.current + 45.days,
   minimum_stay_months: 6,
   is_furnished: false,
-  has_private_bathroom: false,
-  status: :draft
+  has_private_bathroom: false
 )
 
 # Propiedad 5 (Barrio Italia): Una habitación ya arrendada (rented)
@@ -402,8 +395,7 @@ listing_italia_rented = Listing.create!(
   available_date: Date.current + 2.days,
   minimum_stay_months: 6,
   is_furnished: true,
-  has_private_bathroom: false,
-  status: :rented
+  has_private_bathroom: false
 )
 
 # Propiedad 6 (Santiago Centro): Una retirada del mercado (withdrawn)
@@ -415,9 +407,12 @@ listing_centro_withdrawn = Listing.create!(
   available_date: Date.current + 30.days,
   minimum_stay_months: 3,
   is_furnished: true,
-  has_private_bathroom: false,
-  status: :withdrawn
+  has_private_bathroom: false
 )
+
+[listing_prov_master, listing_prov_single, listing_nunoa_jardin, listing_nunoa_estudio,
+ listing_lastarria, listing_las_condes_suite, listing_italia_rented].each(&:publish!)
+listing_centro_withdrawn.withdraw!
 
 puts "=== Creando Postulaciones (Applications) en todos los estados del ciclo de vida ==="
 # Situación 1: Varios postulantes compitiendo por la habitación de Barrio Lastarria
@@ -447,7 +442,7 @@ app_lastarria_lucas = Application.create!(
   message: "Buenas tardes, me gustaría saber si el arriendo incluye gastos comunes. Trabajo en gastronomía.",
   move_in_date: Date.current + 10.days,
   intended_stay_months: 6,
-  status: :rejected
+  status: :shortlisted
 )
 app_lastarria_lucas.update_columns(created_at: 12.days.ago)
 
@@ -462,14 +457,25 @@ app_lastarria_sofia = Application.create!(
 app_lastarria_sofia.update_columns(created_at: 9.days.ago)
 
 # Situación 2: Postulación aceptada para la habitación reservada de Ñuñoa
+app_nunoa_competitor = Application.create!(
+  user: diego,
+  listing: listing_nunoa_estudio,
+  message: "Estoy buscando una habitación tranquila cerca de la universidad.",
+  move_in_date: Date.current + 12.days,
+  intended_stay_months: 6,
+  status: :pending
+)
+
 app_nunoa_martin = Application.create!(
   user: martin,
   listing: listing_nunoa_estudio,
   message: "Estimado Felipe, soy estudiante de doctorado en la UC. Busco un ambiente silencioso y respetuoso para estudiar.",
   move_in_date: Date.current + 10.days,
   intended_stay_months: 12,
-  status: :accepted
+  status: :pending
 )
+app_nunoa_martin.shortlist!
+app_nunoa_martin.accept!
 app_nunoa_martin.update_columns(created_at: 14.days.ago)
 
 # Situación 3: Postulaciones activas en Providencia
@@ -500,8 +506,11 @@ app_italia_tomas = Application.create!(
   message: "Hola Ignacia! Trabajo en una agencia en Providencia. Me encantó la casa y el taller.",
   move_in_date: Date.current + 2.days,
   intended_stay_months: 12,
-  status: :accepted
+  status: :pending
 )
+app_italia_tomas.shortlist!
+app_italia_tomas.accept!
+app_italia_tomas.listing.mark_rented!
 app_italia_tomas.update_columns(created_at: 15.days.ago)
 
 puts "=== Creando Visitas (Visits) y ejerciendo estados ==="

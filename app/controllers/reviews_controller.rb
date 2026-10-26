@@ -1,5 +1,6 @@
 class ReviewsController < ApplicationController
   before_action :set_review, only: [:show, :edit, :update, :destroy]
+  before_action :ensure_author, only: [:edit, :update, :destroy]
   before_action :load_completed_visits, only: [:new, :create]
 
   def index
@@ -16,10 +17,13 @@ class ReviewsController < ApplicationController
 
   def create
     @review = Review.new(review_params)
+    @review.visit = @visits.find_by(id: @review.visit_id)
 
-    if @review.visit.present?
+    if @review.visit
       @review.user = current_user
       @review.property = @review.visit.application.listing.property
+    else
+      @review.errors.add(:visit, "must be one of your completed visits")
     end
 
     if @review.save
@@ -53,6 +57,12 @@ class ReviewsController < ApplicationController
 
   def set_review
     @review = Review.find(params[:id])
+  end
+
+  def ensure_author
+    return if @review.user_id == current_user&.id
+
+    redirect_to @review, alert: "Only the reviewer can manage this review."
   end
 
   def load_completed_visits

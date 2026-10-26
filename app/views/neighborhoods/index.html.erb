@@ -1,27 +1,16 @@
 <section class="container my-5">
-  <%= link_to "← Back to neighborhoods",
-              neighborhoods_path,
-              class: "btn btn-outline-secondary mb-4" %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Neighborhoods</h1>
+    <%= link_to "New neighborhood", new_neighborhood_path, class: "btn btn-primary" %>
+  </div>
 
-  <h1><%= @neighborhood.name %></h1>
-
-  <p class="text-muted">
-    <%= pluralize(@neighborhood.properties.count, "property") %>
-  </p>
-
-  <hr class="my-5">
-
-  <h2 class="h3">Listings in <%= @neighborhood.name %></h2>
-
-  <% if @neighborhood.listings.any? %>
-    <div class="row g-4">
-      <% @neighborhood.listings.each do |listing| %>
-        <div class="col-md-6 col-lg-4">
-          <%= render "listings/listing", listing: listing %>
-        </div>
+  <% if @neighborhoods.any? %>
+    <div class="list-group">
+      <% @neighborhoods.each do |neighborhood| %>
+        <%= link_to neighborhood.name, neighborhood_path(neighborhood), class: "list-group-item list-group-item-action" %>
       <% end %>
     </div>
   <% else %>
-    <p>No listings found in this neighborhood.</p>
+    <div class="alert alert-info">No neighborhoods found.</div>
   <% end %>
 </section>

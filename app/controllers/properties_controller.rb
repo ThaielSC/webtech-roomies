@@ -1,5 +1,6 @@
 class PropertiesController < ApplicationController
   before_action :set_property, only: [:show, :edit, :update, :destroy]
+  before_action :ensure_host, only: [:edit, :update, :destroy]
   before_action :load_form_options, only: [:new, :create, :edit, :update]
 
   def index
@@ -7,6 +8,7 @@ class PropertiesController < ApplicationController
   end
 
   def show
+    @listings = @property.listings.merge(Listing.visible_to(current_user))
     @reviewable_visits = Visit.completed
                              .joins(application: :listing)
                              .where(listings: { property_id: @property.id }, applications: { user_id: current_user&.id })
@@ -57,6 +59,12 @@ class PropertiesController < ApplicationController
 
   def set_property
     @property = Property.find(params[:id])
+  end
+
+  def ensure_host
+    return if @property.user_id == current_user&.id
+
+    redirect_to @property, alert: "Only the host can manage this property."
   end
 
   def load_form_options

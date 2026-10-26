@@ -12,18 +12,12 @@
   <% end %>
 
   <div class="mb-3">
-    <%= form.label :user_id, "Host", class: "form-label" %>
-    <%= form.collection_select :user_id, @users, :id, :full_name,
-          { prompt: "Select a host" },
-          { class: "form-select", required: true } %>
-  </div>
-
-  <div class="mb-3">
     <%= form.label :address, class: "form-label" %>
     <%= form.text_field :address,
           class: "form-control",
           placeholder: "e.g. Av. Providencia 1234",
           required: true %>
+    <% property.errors.full_messages_for(:address).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <div class="mb-3">
