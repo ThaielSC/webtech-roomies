@@ -16,6 +16,8 @@ Roomies models shared housing: users, properties, room listings, applications, v
 
 The frontend assets use Bootstrap 5.3 and Sass.
 
+Listing photographs accept JPEG, PNG, and WebP files up to **5 MB per image**. Image variants use the `image_processing` and `ruby-vips` gems plus the system libvips package; install libvips for your operating system before processing uploaded photographs.
+
 ## Local setup
 
 Clone the repository and install the dependencies:
