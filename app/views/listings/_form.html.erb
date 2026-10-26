@@ -98,6 +98,7 @@
   <div class="mb-4">
     <%= form.label :description, class: "form-label" %>
     <%= form.rich_text_area :description, class: "form-control" %>
+    <% listing.errors.full_messages_for(:description).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <h2 class="h4">House rules</h2>
@@ -105,6 +106,7 @@
   <div class="mb-4">
     <%= form.label :house_rules, class: "form-label" %>
     <%= form.rich_text_area :house_rules, class: "form-control" %>
+    <% listing.errors.full_messages_for(:house_rules).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <hr class="my-4">
