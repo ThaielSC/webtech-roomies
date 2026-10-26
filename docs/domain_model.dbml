@@ -50,15 +50,15 @@ Table users {
   updated_at timestamp [not null]
 }
 
-// Official catalog of neighborhoods (managed by moderators)
+// Shared neighborhood catalog
 Table neighborhoods {
   id bigint [pk, increment]
-  name varchar [not null, unique]
+  name varchar
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
 
-// Official catalog of property amenities (managed by moderators)
+// Shared property amenity catalog
 Table amenities {
   id bigint [pk, increment]
   name varchar [not null, unique]
@@ -98,8 +98,8 @@ Table listings {
   id bigint [pk, increment]
   property_id bigint [not null, ref: > properties.id]
   title varchar [not null]
-  monthly_rent decimal(8, 2) [not null]
-  deposit decimal(8, 2) [not null]
+  monthly_rent decimal(8, 2) [not null, note: 'Monthly rent in UF']
+  deposit decimal(8, 2) [not null, note: 'Deposit in UF']
   available_date date [not null]
   minimum_stay_months smallint [not null]
   is_furnished boolean [not null, default: false]
@@ -126,7 +126,7 @@ Table applications {
   }
 }
 
-// In-person property visits coordinated for shortlisted applications
+// Property visits linked to applications
 Table visits {
   id bigint [pk, increment]
   application_id bigint [not null, ref: > applications.id]
@@ -137,7 +137,7 @@ Table visits {
   updated_at timestamp [not null]
 }
 
-// Public reviews left by seekers strictly after completed visits
+// Reviews linked to completed visits; at most one review per visit
 Table reviews {
   id bigint [pk, increment]
   visit_id bigint [not null, unique, ref: - visits.id]
