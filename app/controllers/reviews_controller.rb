@@ -41,12 +41,13 @@ class ReviewsController < ApplicationController
     if @review.update(review_update_params)
       redirect_to @review, notice: "Review updated successfully."
     else
+      flash.now[:alert] = "Could not update review."
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @review.destroy!
+    @review.destroy
 
     redirect_to reviews_path,
                 notice: "Review deleted successfully.",

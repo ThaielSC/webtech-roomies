@@ -49,6 +49,7 @@ class ApplicationsController < ApplicationController
     if @application.update(application_params)
       redirect_to @application, notice: "Application updated successfully."
     else
+      flash.now[:alert] = "Could not update application."
       render :edit, status: :unprocessable_entity
     end
   end

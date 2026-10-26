@@ -19,6 +19,7 @@ class NeighborhoodsController < ApplicationController
     if @neighborhood.save
       redirect_to @neighborhood, notice: "Neighborhood created successfully."
     else
+      flash.now[:alert] = "Could not create neighborhood."
       render :new, status: :unprocessable_entity
     end
   end
@@ -30,6 +31,7 @@ class NeighborhoodsController < ApplicationController
     if @neighborhood.update(neighborhood_params)
       redirect_to @neighborhood, notice: "Neighborhood updated successfully."
     else
+      flash.now[:alert] = "Could not update neighborhood."
       render :edit, status: :unprocessable_entity
     end
   end

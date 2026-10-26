@@ -19,6 +19,7 @@
           @properties, :id, :address,
           { prompt: "Select a property" },
           { class: "form-select", required: true } %>
+    <% listing.errors.full_messages_for(:property).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <div class="mb-3">
@@ -36,23 +37,25 @@
 
   <div class="row">
     <div class="col-md-6 mb-3">
-      <%= form.label :monthly_rent, "Monthly rent (CLP)", class: "form-label" %>
+      <%= form.label :monthly_rent, "Monthly rent (UF)", class: "form-label" %>
 
       <%= form.number_field :monthly_rent,
             class: "form-control",
-            min: 0,
-            step: 1,
+            min: 0.01,
+            step: 0.01,
             required: true %>
+      <% listing.errors.full_messages_for(:monthly_rent).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
     </div>
 
     <div class="col-md-6 mb-3">
-      <%= form.label :deposit, "Deposit (CLP)", class: "form-label" %>
+      <%= form.label :deposit, "Deposit (UF)", class: "form-label" %>
 
       <%= form.number_field :deposit,
             class: "form-control",
             min: 0,
-            step: 1,
+            step: 0.01,
             required: true %>
+      <% listing.errors.full_messages_for(:deposit).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
     </div>
   </div>
 
@@ -62,7 +65,9 @@
 
       <%= form.date_field :available_date,
             class: "form-control",
+            min: Date.current,
             required: true %>
+      <% listing.errors.full_messages_for(:available_date).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
     </div>
 
     <div class="col-md-6 mb-3">
@@ -72,6 +77,7 @@
             class: "form-control",
             min: 1,
             required: true %>
+      <% listing.errors.full_messages_for(:minimum_stay_months).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
     </div>
   </div>
 
@@ -112,6 +118,7 @@
           multiple: true,
           accept: "image/jpeg,image/png,image/webp",
           class: "form-control" %>
+    <% listing.errors.full_messages_for(:photos).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
 
     <div class="form-text">
       JPEG, PNG, or WebP only. Maximum 5 MB per photograph.
