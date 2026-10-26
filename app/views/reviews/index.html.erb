@@ -1,0 +1,80 @@
+<section class="container my-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Reviews</h1>
+
+    <%= link_to "Write review",
+                new_review_path,
+                class: "btn btn-success" %>
+  </div>
+
+  <% if @reviews.any? %>
+    <div class="row g-4">
+
+      <% @reviews.each do |review| %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+
+              <h2 class="h5">
+                <%= link_to review.property.address,
+                            property_path(review.property) %>
+              </h2>
+
+              <p class="mb-2">
+                <strong>Rating:</strong>
+
+                <span class="text-warning">
+                  <%= "★" * review.rating %>
+                </span>
+
+                <span class="text-muted">
+                  <%= "☆" * (5 - review.rating) %>
+                </span>
+              </p>
+
+              <p>
+                <%= truncate(review.comment, length: 150) %>
+              </p>
+
+              <p class="text-muted small">
+                By <%= review.user.full_name %>
+              </p>
+
+              <p class="text-muted small">
+                <%= review.created_at.strftime("%B %d, %Y") %>
+              </p>
+
+              <div class="d-flex flex-wrap gap-2">
+                <%= link_to "View",
+                            review_path(review),
+                            class: "btn btn-sm btn-primary" %>
+
+                <%= link_to "Edit",
+                            edit_review_path(review),
+                            class: "btn btn-sm btn-outline-primary" %>
+
+                <%= button_to "Delete",
+                              review_path(review),
+                              method: :delete,
+                              class: "btn btn-sm btn-outline-danger",
+                              form: {
+                                data: {
+                                  turbo_confirm: "Are you sure you want to delete this review?"
+                                }
+                              } %>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      No reviews have been submitted yet.
+    </div>
+  <% end %>
+
+</section>

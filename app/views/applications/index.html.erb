@@ -11,17 +11,20 @@
             <th>Move-in date</th>
             <th>Stay</th>
             <th>Status</th>
-            <th></th>
+            <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
           <% @applications.each do |application| %>
             <tr>
-              <td><%= application.user.full_name %></td>
+              <td>
+                <%= application.user.full_name %>
+              </td>
 
               <td>
-                <%= application.listing.title %>
+                <%= link_to application.listing.title,
+                            listing_path(application.listing) %>
               </td>
 
               <td>
@@ -33,13 +36,33 @@
               </td>
 
               <td>
-                <%= application.status.humanize %>
+                <span class="badge text-bg-secondary">
+                  <%= application.status.humanize %>
+                </span>
               </td>
 
               <td>
-                <%= link_to "View",
-                            application_path(application),
-                            class: "btn btn-sm btn-primary" %>
+                <div class="d-flex flex-wrap gap-2">
+                  <%= link_to "View",
+                              application_path(application),
+                              class: "btn btn-sm btn-primary" %>
+
+                  <% if application.pending? || application.shortlisted? %>
+                    <%= link_to "Edit",
+                                edit_application_path(application),
+                                class: "btn btn-sm btn-outline-primary" %>
+
+                    <%= button_to "Withdraw",
+                                  application_path(application),
+                                  method: :delete,
+                                  class: "btn btn-sm btn-outline-danger",
+                                  form: {
+                                    data: {
+                                      turbo_confirm: "Are you sure you want to withdraw this application?"
+                                    }
+                                  } %>
+                  <% end %>
+                </div>
               </td>
             </tr>
           <% end %>
@@ -47,6 +70,8 @@
       </table>
     </div>
   <% else %>
-    <p>No applications found.</p>
+    <div class="alert alert-info">
+      No applications found.
+    </div>
   <% end %>
 </section>

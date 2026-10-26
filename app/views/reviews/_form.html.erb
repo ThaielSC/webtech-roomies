@@ -1,0 +1,70 @@
+<%= form_with model: review do |form| %>
+
+  <% if review.errors.any? %>
+    <div class="alert alert-danger">
+      <strong>Please correct the following errors:</strong>
+
+      <ul class="mb-0">
+        <% review.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if review.new_record? %>
+    <div class="mb-3">
+      <%= form.label :visit_id, "Completed visit", class: "form-label" %>
+
+      <%= form.collection_select :visit_id,
+            @visits,
+            :id,
+            :id,
+            { prompt: "Select a completed visit" },
+            { class: "form-select", required: true } %>
+
+      <div class="form-text">
+        Select the completed visit you want to review.
+      </div>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <strong>Property:</strong>
+      <%= review.property.address %>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :rating, "Rating", class: "form-label" %>
+
+    <%= form.select :rating,
+          [
+            ["⭐ 1 — Very poor", 1],
+            ["⭐⭐ 2 — Poor", 2],
+            ["⭐⭐⭐ 3 — Average", 3],
+            ["⭐⭐⭐⭐ 4 — Good", 4],
+            ["⭐⭐⭐⭐⭐ 5 — Excellent", 5]
+          ],
+          { prompt: "Select a rating" },
+          { class: "form-select", required: true } %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :comment, "Your review", class: "form-label" %>
+
+    <%= form.text_area :comment,
+          class: "form-control",
+          rows: 5,
+          placeholder: "Describe your experience with this property...",
+          required: true %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+
+    <%= link_to "Cancel",
+          review.persisted? ? review_path(review) : reviews_path,
+          class: "btn btn-outline-secondary" %>
+  </div>
+
+<% end %>
