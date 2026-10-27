@@ -1,0 +1,5 @@
+<% @applications.each do |application| %>
+  <%= turbo_stream.replace dom_id(application), partial: "applications/row", locals: { application: application } %>
+<% end %>
+<%= turbo_stream.replace "pending-count", html: "#{@pending_count} pending" %>
+<%= turbo_stream.prepend "flash-messages", partial: "shared/flash" %>

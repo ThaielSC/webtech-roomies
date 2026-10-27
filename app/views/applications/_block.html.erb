@@ -1,0 +1,18 @@
+<%= turbo_frame_tag "application_block" do %>
+  <section class="card mb-4" aria-label="Application">
+    <div class="card-body">
+      <% if application.persisted? %>
+        <h2 class="h5">Your application: <%= application.status.humanize %></h2>
+        <p class="mb-2"><%= application.message %></p>
+        <% if application.pending? || application.shortlisted? %>
+          <%= button_to "Withdraw application", application_path(application), method: :delete, class: "btn btn-outline-danger" %>
+        <% end %>
+      <% elsif listing.property.user_id == current_user&.id %>
+        <p class="mb-0">This listing is <%= listing.status %>.</p>
+      <% elsif listing.published? %>
+        <h2 class="h5">Apply to this listing</h2>
+        <%= render "applications/form", listing: listing, application: application %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
