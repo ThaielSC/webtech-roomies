@@ -66,7 +66,7 @@ The seed creates:
 - 12 neighborhoods and 14 amenities
 - 13 users: one moderator and 12 regular users
 - 6 properties and 9 listings: 5 published, 1 draft, 1 reserved, 1 rented, and 1 withdrawn
-- 8 applications, 6 visits, and 3 reviews
+- 9 applications, 6 visits, and 3 reviews
 - 6 saved listings and 3 reports
 
 Monthly rent and deposits are expressed in **UF**, stored as `decimal(8, 2)`. The sample rents range from 7.00 to 11.50 UF.

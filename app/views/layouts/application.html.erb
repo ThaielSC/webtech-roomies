@@ -46,6 +46,9 @@
             <%= link_to "Neighborhoods", neighborhoods_path, class: "nav-link" %>
             <%= link_to "Amenities", amenities_path, class: "nav-link" %>
             <%= link_to "Applications", applications_path, class: "nav-link" %>
+            <%= form_with url: current_user_path, method: :patch, class: "d-flex align-items-center ms-lg-3" do %>
+              <%= select_tag :user_id, options_from_collection_for_select(User.order(:first_name), :id, :full_name, current_user&.id), class: "form-select form-select-sm", aria: { label: "Act as user" }, onchange: "this.form.requestSubmit()" %>
+            <% end %>
           </div>
         </div>
       </div>

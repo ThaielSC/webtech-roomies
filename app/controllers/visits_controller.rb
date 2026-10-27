@@ -20,6 +20,7 @@ class VisitsController < ApplicationController
 
   def create
     @visit = Visit.new(visit_params)
+    @visit.application = @applications.find { |application| application.id == @visit.application_id }
     @visit.status = :proposed
 
     if @visit.save
@@ -34,7 +35,7 @@ class VisitsController < ApplicationController
   end
 
   def update
-    if @visit.update(visit_params)
+    if @visit.update(visit_update_params)
       redirect_to @visit, notice: "Visit updated successfully."
     else
       flash.now[:alert] = "Could not update visit."
@@ -74,7 +75,10 @@ class VisitsController < ApplicationController
   def load_applications
     @applications = Application.shortlisted.joins(listing: :property).includes(:user, :listing)
                                .where(properties: { user_id: current_user&.id })
-                               .order(created_at: :desc)
+                               .order(created_at: :desc).to_a
+    if @visit&.application && @visit.application.listing.property.user_id == current_user&.id
+      @applications << @visit.application unless @applications.include?(@visit.application)
+    end
   end
 
   def visit_params
@@ -83,6 +87,10 @@ class VisitsController < ApplicationController
       :date_time,
       :notes
     )
+  end
+
+  def visit_update_params
+    params.require(:visit).permit(:date_time, :notes)
   end
 
   def change_status(status, message)

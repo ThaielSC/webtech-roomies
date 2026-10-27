@@ -31,9 +31,9 @@
 
   <h2 class="h3">Listings in <%= @neighborhood.name %></h2>
 
-  <% if @neighborhood.listings.any? %>
+  <% if @listings.any? %>
     <div class="row g-4">
-      <% @neighborhood.listings.each do |listing| %>
+      <% @listings.each do |listing| %>
         <div class="col-md-6 col-lg-4">
           <%= render "listings/listing", listing: listing %>
         </div>

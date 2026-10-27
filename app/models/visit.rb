@@ -9,8 +9,8 @@ class Visit < ApplicationRecord
   validates :date_time, presence: true
 
   validate :visit_date_must_be_after_application_creation
-  validate :application_must_be_shortlisted, on: :create
-  validate :visit_must_not_be_in_the_past
+  validate :application_must_be_shortlisted, on: :create, if: :proposed?
+  validate :visit_must_not_be_in_the_past, if: :scheduled_visit?
 
   scope :completed, -> { where(status: :completed) }
   scope :upcoming, -> { where("date_time >= ?", Time.current) }
@@ -33,5 +33,9 @@ class Visit < ApplicationRecord
     return if date_time.blank? || date_time >= Time.current
 
     errors.add(:date_time, "cannot be in the past")
+  end
+
+  def scheduled_visit?
+    (new_record? || will_save_change_to_date_time?) && (proposed? || confirmed?)
   end
 end

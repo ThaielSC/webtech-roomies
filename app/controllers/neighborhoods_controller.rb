@@ -6,6 +6,7 @@ class NeighborhoodsController < ApplicationController
   end
 
   def show
+    @listings = @neighborhood.listings.merge(Listing.visible_to(current_user))
   end
 
   def new
