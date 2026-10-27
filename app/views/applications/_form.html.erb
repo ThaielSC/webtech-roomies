@@ -18,6 +18,7 @@
           rows: 4,
           placeholder: "Introduce yourself and explain why you're interested...",
           required: true %>
+    <% application.errors.full_messages_for(:message).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <div class="mb-3">
@@ -26,6 +27,7 @@
           class: "form-control",
           min: Date.current,
           required: true %>
+    <% application.errors.full_messages_for(:move_in_date).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <div class="mb-3">
@@ -35,6 +37,7 @@
           class: "form-control",
           min: 1,
           required: true %>
+    <% application.errors.full_messages_for(:intended_stay_months).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <%= form.submit "Submit application", class: "btn btn-success" %>

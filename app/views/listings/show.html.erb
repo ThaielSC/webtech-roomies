@@ -66,12 +66,12 @@
 
       <p>
         <strong>Monthly rent:</strong>
-        <%= number_to_currency(@listing.monthly_rent, unit: "$", precision: 0) %> CLP
+        <%= number_to_currency(@listing.monthly_rent, unit: "UF ", precision: 2) %>
       </p>
 
       <p>
         <strong>Deposit:</strong>
-        <%= number_to_currency(@listing.deposit, unit: "$", precision: 0) %> CLP
+        <%= number_to_currency(@listing.deposit, unit: "UF ", precision: 2) %>
       </p>
 
       <p>

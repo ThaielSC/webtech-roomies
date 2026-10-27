@@ -16,16 +16,15 @@
     <div class="mb-3">
       <%= form.label :visit_id, "Completed visit", class: "form-label" %>
 
-      <%= form.collection_select :visit_id,
-            @visits,
-            :id,
-            :id,
+      <%= form.select :visit_id,
+            @visits.map { |visit| ["#{visit.application.listing.title} — #{l(visit.date_time)}", visit.id] },
             { prompt: "Select a completed visit" },
             { class: "form-select", required: true } %>
 
       <div class="form-text">
         Select the completed visit you want to review.
       </div>
+      <% review.errors.full_messages_for(:visit).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
     </div>
   <% else %>
     <div class="alert alert-info">
@@ -47,6 +46,7 @@
           ],
           { prompt: "Select a rating" },
           { class: "form-select", required: true } %>
+    <% review.errors.full_messages_for(:rating).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <div class="mb-3">
@@ -57,6 +57,7 @@
           rows: 5,
           placeholder: "Describe your experience with this property...",
           required: true %>
+    <% review.errors.full_messages_for(:comment).each do |message| %><div class="text-danger small"><%= message %></div><% end %>
   </div>
 
   <div class="d-flex gap-2">

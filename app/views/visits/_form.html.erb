@@ -15,16 +15,17 @@
   <div class="mb-3">
     <%= form.label :application_id, "Application", class: "form-label" %>
 
-    <%= form.collection_select :application_id,
-          @applications,
-          :id,
-          :id,
+    <%= form.select :application_id,
+          @applications.map { |application| ["#{application.user.full_name} — #{application.listing.title}", application.id] },
           { prompt: "Select an application" },
           { class: "form-select", required: true } %>
 
     <div class="form-text">
       Select the application associated with this visit.
     </div>
+    <% visit.errors.full_messages_for(:application).each do |message| %>
+      <div class="text-danger small"><%= message %></div>
+    <% end %>
   </div>
 
   <div class="mb-3">
@@ -34,6 +35,9 @@
           class: "form-control",
           min: Time.current.strftime("%Y-%m-%dT%H:%M"),
           required: true %>
+    <% visit.errors.full_messages_for(:date_time).each do |message| %>
+      <div class="text-danger small"><%= message %></div>
+    <% end %>
   </div>
 
   <div class="mb-3">
