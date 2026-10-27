@@ -1,5 +1,5 @@
 class ApplicationsController < ApplicationController
-  before_action :set_application, only: [:show, :edit, :update, :destroy]
+  before_action :set_application, only: [:show, :edit, :update, :destroy, :shortlist, :reject, :accept]
 
   def index
     @applications = Application.includes(:user, listing: :property)
@@ -18,14 +18,22 @@ class ApplicationsController < ApplicationController
     @listing = Listing.find(params[:listing_id])
     @application = @listing.applications.build(application_params)
 
-    # Temporary until the acting-user selector is implemented.
-    @application.user = User.find_by(id: params[:user_id]) || User.first
+    @application.user = current_user
 
     if @application.save
-      redirect_to @listing, notice: "Application submitted successfully."
+      respond_to do |format|
+        format.html { redirect_to @listing, notice: "Application submitted successfully." }
+        format.turbo_stream
+      end
     else
-      flash.now[:alert] = "Could not submit application."
-      render "listings/show", status: :unprocessable_entity
+      @listing = @application.listing
+      respond_to do |format|
+        format.html do
+          flash.now[:alert] = "Could not submit application."
+          render "listings/show", status: :unprocessable_entity
+        end
+        format.turbo_stream { render "create_error", status: :unprocessable_entity }
+      end
     end
   end
 
@@ -41,11 +49,32 @@ class ApplicationsController < ApplicationController
   end
 
   def destroy
-    @application.update(status: :withdrawn)
+    @application.withdraw!(actor: current_user)
 
     redirect_to applications_path,
                 notice: "Application withdrawn successfully.",
                 status: :see_other
+  end
+
+  def shortlist
+    @application.shortlist!
+    respond_to_status_change("Application shortlisted.")
+  rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
+    redirect_to applications_path, alert: error.message
+  end
+
+  def reject
+    @application.reject!
+    respond_to_status_change("Application rejected.")
+  rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
+    redirect_to applications_path, alert: error.message
+  end
+
+  def accept
+    @application.accept!
+    respond_to_status_change("Application accepted; listing reserved.")
+  rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
+    redirect_to applications_path, alert: error.message
   end
 
   private
@@ -60,5 +89,16 @@ class ApplicationsController < ApplicationController
       :move_in_date,
       :intended_stay_months
     )
+  end
+
+  def respond_to_status_change(message)
+    respond_to do |format|
+      format.html { redirect_to applications_path, notice: message }
+      format.turbo_stream do
+        @applications = Application.where(listing_id: @application.listing_id)
+        flash.now[:notice] = message
+        render :status_change
+      end
+    end
   end
 end

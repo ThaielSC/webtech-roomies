@@ -18,7 +18,7 @@ class ReviewsController < ApplicationController
     @review = Review.new(review_params)
 
     if @review.visit.present?
-      @review.user = @review.visit.application.user
+      @review.user = current_user
       @review.property = @review.visit.application.listing.property
     end
 
@@ -58,6 +58,7 @@ class ReviewsController < ApplicationController
   def load_completed_visits
     @visits = Visit.completed
                    .includes(application: [:user, { listing: :property }])
+                   .where(applications: { user_id: current_user&.id })
                    .order(date_time: :desc)
   end
 

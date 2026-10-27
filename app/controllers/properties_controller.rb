@@ -7,6 +7,11 @@ class PropertiesController < ApplicationController
   end
 
   def show
+    @reviewable_visits = Visit.completed
+                             .joins(application: :listing)
+                             .where(listings: { property_id: @property.id }, applications: { user_id: current_user&.id })
+                             .left_joins(:review)
+                             .where(reviews: { id: nil })
   end
 
   def new
@@ -15,6 +20,7 @@ class PropertiesController < ApplicationController
 
   def create
     @property = Property.new(property_params)
+    @property.user = current_user
 
     if @property.save
       redirect_to @property, notice: "Property created successfully."
@@ -56,12 +62,10 @@ class PropertiesController < ApplicationController
   def load_form_options
     @neighborhoods = Neighborhood.order(:name)
     @amenities = Amenity.order(:name)
-    @users = User.order(:first_name, :last_name)
   end
 
   def property_params
     params.require(:property).permit(
-      :user_id,
       :neighborhood_id,
       :address,
       :property_type,

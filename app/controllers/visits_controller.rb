@@ -72,7 +72,8 @@ class VisitsController < ApplicationController
   end
 
   def load_applications
-    @applications = Application.includes(:user, :listing)
+    @applications = Application.shortlisted.joins(listing: :property).includes(:user, :listing)
+                               .where(properties: { user_id: current_user&.id })
                                .order(created_at: :desc)
   end
 
