@@ -1,0 +1,10 @@
+Hello <%= recipient_name(@applicant.first_name) %>,
+
+Congratulations! Your application for <%= @listing.title %> has been accepted by <%= @host.full_name %>.
+
+Property address: <%= @listing.property.address %>
+Monthly rent: <%= @listing.monthly_rent %> UF
+Move-in date: <%= @application.move_in_date.strftime("%B %d, %Y") %>
+Host contact: <%= @host.email_address %>
+
+View application: <%= application_url(@application) %>

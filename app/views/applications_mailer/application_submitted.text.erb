@@ -1,0 +1,10 @@
+Hello <%= recipient_name(@host.first_name) %>,
+
+You have received a new application for <%= @listing.title %> from <%= @applicant.full_name %>.
+
+Move-in date: <%= @application.move_in_date.strftime("%B %d, %Y") %>
+Intended stay: <%= @application.intended_stay_months %> months
+Applicant message:
+<%= @application.message %>
+
+View application: <%= application_url(@application) %>

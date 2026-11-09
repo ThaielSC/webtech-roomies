@@ -1,0 +1,5 @@
+<p>Hello <%= recipient_name %>,</p>
+
+<p>The status of the application for <strong><%= @listing.title %></strong> has been updated to: <strong><%= @application.status.humanize %></strong>.</p>
+
+<p><%= link_to "View Application", application_url(@application) %></p>

@@ -1,0 +1,5 @@
+<p>Hello <%= recipient_name(@host.first_name) %>,</p>
+
+<p>The application submitted by <%= @applicant.full_name %> for <strong><%= @listing.title %></strong> has been withdrawn.</p>
+
+<p><%= link_to "View Listing", listing_url(@listing) %></p>
