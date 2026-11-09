@@ -108,3 +108,111 @@ Review.positive
 - [Static landing prototype](landing/)
 
 ![Roomies domain model](docs/diagram.svg)
+
+## Authentication and Authorization
+
+Roomies implements authentication using the native Rails 8 authentication system and authorization using the Pundit gem.
+
+### Authentication
+
+Registered users can:
+
+- Create an account with their name, email, and password.
+- Log in and log out.
+- Reset their password through email.
+- View and edit their profile.
+- Maintain authenticated sessions using secure cookies.
+
+Passwords are securely hashed using `has_secure_password` and bcrypt. Sessions are stored in the database.
+
+Unauthenticated users can browse public content, but actions requiring an account redirect them to the login page.
+
+### User roles
+
+Roomies supports two registered user roles:
+
+| Role | Description |
+|------|-------------|
+| `member` | Default role assigned to registered users. |
+| `moderator` | Administrative role with additional moderation permissions. |
+
+Visitors are unauthenticated users and do not have an assigned role.
+
+### Authorization with Pundit
+
+Authorization is enforced through Pundit policies and policy scopes.
+
+| Resource | Permissions |
+|----------|-------------|
+| Properties | Authenticated users can create properties. Owners and moderators can edit or delete them. |
+| Listings | Published listings are publicly accessible. Owners and moderators can manage listings, including unpublished ones. |
+| Applications | Authenticated users can apply to listings they do not own. Applicants, hosts, and moderators can access relevant applications. Only hosts can manage application decisions. |
+| Visits | Applicants and hosts can manage visits associated with their applications, subject to visit status restrictions. |
+| Reviews | Members can submit reviews after completing an eligible visit. Authors and moderators can delete reviews. |
+| Reports | Authenticated users can report listings. Moderators can review and resolve reports. |
+| Neighborhoods | Publicly accessible for viewing. Only moderators can create, edit, or delete neighborhoods. |
+| Amenities | Publicly accessible for viewing. Only moderators can create, edit, or delete amenities. |
+
+Authorization is enforced server-side in controllers using `authorize` and `policy_scope`.
+
+Navigation links and action buttons are also conditionally displayed according to the current user's permissions.
+
+Unauthorized actions redirect users to the homepage with an error message.
+
+### Listing reports and moderation
+
+Authenticated users can report listings by selecting a reason and providing additional details.
+
+Reports have four possible statuses:
+
+- `pending`: The report has been submitted.
+- `reviewed`: A moderator has reviewed the report.
+- `dismissed`: A moderator has dismissed the report.
+- `action_taken`: A moderator has marked the report as requiring or having received action.
+
+Moderators can access the Reports dashboard to inspect submitted reports and update their statuses.
+
+Updating a report's status does not automatically modify the associated listing.
+
+### Development accounts
+
+The database seed includes accounts for testing authentication and authorization.
+
+| Role | Email | Password |
+|------|-------|----------|
+| Moderator | `moderador@roomies.cl` | `password123` |
+| Property owner | `camila.soto@ejemplo.cl` | `password123` |
+| Member | `diego.rojas@ejemplo.cl` | `password123` |
+
+These credentials are intended exclusively for local development and testing.
+
+### Testing and code quality
+
+Run the automated Rails tests:
+
+```bash
+bin/rails test
+```
+
+Check code formatting and style:
+
+```bash
+bin/rubocop
+```
+
+Verify Rails autoloading:
+
+```bash
+bin/rails zeitwerk:check
+```
+
+Check dependencies for known security vulnerabilities:
+
+```bash
+bundle exec bundler-audit check --update
+```
+
+The test suite includes coverage for authentication functionality and access to protected profile pages.
+
+Pundit policies provide authorization rules for the application's protected resources.
+
