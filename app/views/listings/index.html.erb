@@ -1,25 +1,142 @@
-<section class="container my-5">
-
+<section class="container my-5" data-controller="search">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-0">Available Rooms</h1>
+    <div>
+      <h1 class="mb-0">Available Rooms</h1>
+      <p class="text-muted mb-0">Browse and filter rooms available in Santiago</p>
+    </div>
 
     <%= link_to "Create listing",
                 new_listing_path,
                 class: "btn btn-success" %>
   </div>
 
-  <% if @listings.any? %>
-    <div class="row g-4">
-      <% @listings.each do |listing| %>
-        <div class="col-md-6 col-lg-4">
-          <%= render "listing", listing: listing %>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="alert alert-info">
-      No listings are currently available.
-    </div>
-  <% end %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form data-action="submit->search#reset">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold" for="search-query">Search</label>
+            <input type="text"
+                   id="search-query"
+                   class="form-control"
+                   placeholder="Search by title..."
+                   data-search-target="query"
+                   data-action="input->search#onInput">
+          </div>
 
+          <div class="col-md-3">
+            <label class="form-label fw-semibold" for="search-neighborhood">Neighborhood</label>
+            <select id="search-neighborhood"
+                    class="form-select"
+                    data-search-target="neighborhood"
+                    data-action="change->search#onChange">
+              <option value="">All neighborhoods</option>
+              <% Neighborhood.order(:name).each do |n| %>
+                <option value="<%= n.id %>"><%= n.name %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-semibold" for="search-property-type">Property Type</label>
+            <select id="search-property-type"
+                    class="form-select"
+                    data-search-target="propertyType"
+                    data-action="change->search#onChange">
+              <option value="">All property types</option>
+              <option value="apartment">Apartment</option>
+              <option value="house">House</option>
+            </select>
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button"
+                    class="btn btn-outline-secondary w-100"
+                    data-action="click->search#reset">
+              Reset
+            </button>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-semibold" for="search-min-price">Min Rent (UF)</label>
+            <input type="number"
+                   id="search-min-price"
+                   step="0.5"
+                   min="0"
+                   class="form-control"
+                   placeholder="e.g. 5"
+                   data-search-target="minPrice"
+                   data-action="input->search#onInput">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-semibold" for="search-max-price">Max Rent (UF)</label>
+            <input type="number"
+                   id="search-max-price"
+                   step="0.5"
+                   min="0"
+                   class="form-control"
+                   placeholder="e.g. 15"
+                   data-search-target="maxPrice"
+                   data-action="input->search#onInput">
+          </div>
+
+          <div class="col-md-6 d-flex align-items-center pt-3 gap-4">
+            <div class="form-check">
+              <input class="form-check-input"
+                     type="checkbox"
+                     id="search-furnished"
+                     data-search-target="isFurnished"
+                     data-action="change->search#onChange">
+              <label class="form-check-label" for="search-furnished">
+                Furnished only
+              </label>
+            </div>
+
+            <div class="form-check">
+              <input class="form-check-input"
+                     type="checkbox"
+                     id="search-private-bath"
+                     data-search-target="hasPrivateBathroom"
+                     data-action="change->search#onChange">
+              <label class="form-check-label" for="search-private-bath">
+                Private bathroom only
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="text-muted">
+      Found <span class="fw-bold text-dark" data-search-target="count">0</span> rooms
+    </div>
+  </div>
+
+  <div data-search-target="loading" class="text-center py-5 d-none">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="text-muted mt-2">Searching listings...</p>
+  </div>
+
+  <div data-search-target="empty" class="alert alert-info d-none">
+    <h5 class="alert-heading">No listings found</h5>
+    <p class="mb-0">No rooms match your filter criteria. Try clearing some filters or searching for something else.</p>
+  </div>
+
+  <div data-search-target="error" class="alert alert-danger d-none">
+    <h5 class="alert-heading">Error loading listings</h5>
+    <p class="mb-0" data-search-target="errorMessage">An unexpected error occurred.</p>
+  </div>
+
+  <div class="row g-4" data-search-target="results">
+    <% @listings.each do |listing| %>
+      <div class="col-md-6 col-lg-4">
+        <%= render "listing", listing: listing %>
+      </div>
+    <% end %>
+  </div>
 </section>
