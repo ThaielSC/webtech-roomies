@@ -1,0 +1,11 @@
+Hello <%= recipient_name %>,
+
+A visit has been proposed for <%= @listing.title %>.
+
+Scheduled date and time: <%= @visit.date_time.strftime("%B %d, %Y at %H:%M") %>
+Address: <%= @listing.property.address %>
+<% if @visit.notes.present? %>
+Notes: <%= @visit.notes %>
+<% end %>
+
+View visit: <%= visit_url(@visit) %>

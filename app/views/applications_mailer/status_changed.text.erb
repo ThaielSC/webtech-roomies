@@ -1,0 +1,5 @@
+Hello <%= recipient_name %>,
+
+The status of the application for <%= @listing.title %> has been updated to: <%= @application.status.humanize %>.
+
+View application: <%= application_url(@application) %>

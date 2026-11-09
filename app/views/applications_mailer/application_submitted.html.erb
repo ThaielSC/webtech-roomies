@@ -1,0 +1,15 @@
+<p>Hello <%= recipient_name(@host.first_name) %>,</p>
+
+<p>You have received a new application for <strong><%= @listing.title %></strong> from <%= @applicant.full_name %>.</p>
+
+<div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 16px; margin: 16px 0;">
+  <p><strong>Move-in date:</strong> <%= @application.move_in_date.strftime("%B %d, %Y") %></p>
+  <p><strong>Intended stay:</strong> <%= @application.intended_stay_months %> months</p>
+  <p><strong>Applicant message:</strong></p>
+  <blockquote style="margin: 0; padding-left: 12px; border-left: 3px solid #0d6efd; color: #495057;">
+    <%= @application.message %>
+  </blockquote>
+</div>
+
+<p>You can view and manage this application by clicking the link below:</p>
+<p><%= link_to "View Application", application_url(@application) %></p>

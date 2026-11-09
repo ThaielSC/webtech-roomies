@@ -18,6 +18,8 @@ class Application < ApplicationRecord
   validate :only_one_accepted_application, if: :accepted?
 
   before_update :status_changes_must_use_transition_methods, if: :will_save_change_to_status?
+  after_create_commit :send_submission_notification, if: :pending?
+  after_update_commit :send_status_change_notification, if: :saved_change_to_status?
 
   scope :pending, -> { where(status: :pending) }
   scope :shortlisted, -> { where(status: :shortlisted) }
@@ -108,5 +110,22 @@ class Application < ApplicationRecord
     return unless listing&.applications&.accepted&.where.not(id: id)&.exists?
 
     errors.add(:listing, "already has an accepted application")
+  end
+
+  def send_submission_notification
+    ApplicationsMailer.application_submitted(self).deliver_later
+  end
+
+  def send_status_change_notification
+    case status
+    when "accepted"
+      ApplicationsMailer.application_accepted(self).deliver_later
+    when "rejected"
+      ApplicationsMailer.application_rejected(self).deliver_later
+    when "shortlisted"
+      ApplicationsMailer.application_shortlisted(self).deliver_later
+    when "withdrawn"
+      ApplicationsMailer.application_withdrawn(self).deliver_later
+    end
   end
 end

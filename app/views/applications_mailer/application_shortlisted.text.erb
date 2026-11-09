@@ -1,0 +1,7 @@
+Hello <%= recipient_name(@applicant.first_name) %>,
+
+Good news! Your application for <%= @listing.title %> has been shortlisted by <%= @host.full_name %>.
+
+The host may contact you or propose a visit soon to get to know you better.
+
+View application: <%= application_url(@application) %>

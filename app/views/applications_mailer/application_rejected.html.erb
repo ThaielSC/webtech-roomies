@@ -1,0 +1,8 @@
+<p>Hello <%= recipient_name(@applicant.first_name) %>,</p>
+
+<p>Thank you for your interest in <strong><%= @listing.title %></strong>.</p>
+
+<p>Unfortunately, your application was not accepted at this time.</p>
+
+<p>We encourage you to explore other available listings on Roomies.</p>
+<p><%= link_to "Browse Listings", listings_url %></p>

@@ -1,0 +1,14 @@
+<p>Hello <%= recipient_name %>,</p>
+
+<p>A visit has been proposed for <strong><%= @listing.title %></strong>.</p>
+
+<div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 16px; margin: 16px 0;">
+  <p><strong>Scheduled date and time:</strong> <%= @visit.date_time.strftime("%B %d, %Y at %H:%M") %></p>
+  <p><strong>Address:</strong> <%= @listing.property.address %></p>
+  <% if @visit.notes.present? %>
+    <p><strong>Notes:</strong> <%= @visit.notes %></p>
+  <% end %>
+</div>
+
+<p>Please check the visit details:</p>
+<p><%= link_to "View Visit", visit_url(@visit) %></p>

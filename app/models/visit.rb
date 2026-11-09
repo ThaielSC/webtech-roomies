@@ -15,6 +15,9 @@ class Visit < ApplicationRecord
   scope :completed, -> { where(status: :completed) }
   scope :upcoming, -> { where("date_time >= ?", Time.current) }
 
+  after_create_commit :send_proposed_notification, if: :proposed?
+  after_update_commit :send_status_change_notification, if: :saved_change_to_status?
+
   private
 
   def visit_date_must_be_after_application_creation
@@ -37,5 +40,18 @@ class Visit < ApplicationRecord
 
   def scheduled_visit?
     (new_record? || will_save_change_to_date_time?) && (proposed? || confirmed?)
+  end
+
+  def send_proposed_notification
+    VisitsMailer.visit_proposed(self).deliver_later
+  end
+
+  def send_status_change_notification
+    case status
+    when "confirmed"
+      VisitsMailer.visit_confirmed(self).deliver_later
+    when "cancelled"
+      VisitsMailer.visit_cancelled(self).deliver_later
+    end
   end
 end
