@@ -12,6 +12,12 @@ Rails.application.routes.draw do
   # Public landing page
   root "home#index"
 
+  namespace :api do
+    namespace :v1 do
+      resources :listings, only: [ :index, :show ], defaults: { format: :json }
+    end
+  end
+
   # Neighborhoods and amenities
   resources :neighborhoods
   resources :amenities
