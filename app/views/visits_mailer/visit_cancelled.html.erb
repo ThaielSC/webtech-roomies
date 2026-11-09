@@ -1,0 +1,5 @@
+<p>Hello <%= recipient_name %>,</p>
+
+<p>The visit for <strong><%= @listing.title %></strong> scheduled for <%= @visit.date_time.strftime("%B %d, %Y at %H:%M") %> has been cancelled.</p>
+
+<p><%= link_to "View Visit", visit_url(@visit) %></p>

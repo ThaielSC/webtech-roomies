@@ -1,0 +1,5 @@
+Hello <%= recipient_name %>,
+
+The visit for <%= @listing.title %> scheduled for <%= @visit.date_time.strftime("%B %d, %Y at %H:%M") %> has been cancelled.
+
+View visit: <%= visit_url(@visit) %>
