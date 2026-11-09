@@ -8,34 +8,61 @@
     <h1 class="mb-0"><%= @listing.title %></h1>
 
     <div class="d-flex flex-wrap gap-2">
-      <% if @listing.property.user_id == current_user&.id %>
-        <% if @listing.draft? %>
-          <%= button_to "Publish", publish_listing_path(@listing), method: :patch, class: "btn btn-success" %>
-        <% end %>
-        <% if @listing.draft? || @listing.published? || @listing.reserved? %>
-          <%= button_to "Withdraw", withdraw_listing_path(@listing), method: :patch, class: "btn btn-outline-danger" %>
-        <% end %>
-        <% if @listing.reserved? %>
-          <%= button_to "Mark as rented", mark_rented_listing_path(@listing), method: :patch, class: "btn btn-primary" %>
-        <% end %>
-      <%= link_to "Edit listing",
-                  edit_listing_path(@listing),
-                  class: "btn btn-outline-primary" %>
 
-      <%= button_to "Delete listing",
-                    listing_path(@listing),
-                    method: :delete,
-                    class: "btn btn-outline-danger",
-                    form: {
-                      data: {
-                        turbo_confirm: "Are you sure you want to delete this listing?"
-                      }
-                    } %>
+      <% if policy(@listing).publish? && @listing.draft? %>
+        <%= button_to "Publish",
+                      publish_listing_path(@listing),
+                      method: :patch,
+                      class: "btn btn-success" %>
       <% end %>
+
+      <% if policy(@listing).withdraw? &&
+            (@listing.draft? || @listing.published? || @listing.reserved?) %>
+        <%= button_to "Withdraw",
+                      withdraw_listing_path(@listing),
+                      method: :patch,
+                      class: "btn btn-outline-danger" %>
+      <% end %>
+
+      <% if policy(@listing).mark_rented? && @listing.reserved? %>
+        <%= button_to "Mark as rented",
+                      mark_rented_listing_path(@listing),
+                      method: :patch,
+                      class: "btn btn-primary" %>
+      <% end %>
+
+      <% if policy(@listing).edit? %>
+        <%= link_to "Edit listing",
+                    edit_listing_path(@listing),
+                    class: "btn btn-outline-primary" %>
+      <% end %>
+
+      <% if policy(@listing).destroy? %>
+        <%= button_to "Delete listing",
+                      listing_path(@listing),
+                      method: :delete,
+                      class: "btn btn-outline-danger",
+                      form: {
+                        data: {
+                          turbo_confirm: "Are you sure you want to delete this listing?"
+                        }
+                      } %>
+      <% end %>
+
     </div>
   </div>
 
-  <%= render "applications/block", listing: @listing, application: @application %>
+  <%= render "applications/block",
+             listing: @listing,
+             application: @application %>
+
+  <% if current_user && policy(Report.new(listing: @listing)).create? %>
+    <div class="mb-4">
+      <%= link_to "Report this listing",
+                  new_report_path(listing_id: @listing.id),
+                  class: "btn btn-outline-warning btn-sm" %>
+    </div>
+  <% end %>
 
   <%# PHOTOGRAPH GALLERY %>
 
@@ -101,9 +128,9 @@
         </span>
       </p>
 
-      <%# ACTION TEXT DESCRIPTION %>
-
       <hr class="my-4">
+
+      <%# ACTION TEXT DESCRIPTION %>
 
       <h2 class="h4">Description</h2>
 
@@ -126,7 +153,6 @@
       <% else %>
         <p class="text-muted">No house rules provided.</p>
       <% end %>
-
     </div>
 
     <%# PROPERTY DETAILS %>

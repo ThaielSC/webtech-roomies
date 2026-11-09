@@ -1,18 +1,24 @@
 class ReviewsController < ApplicationController
   before_action :set_review, only: [:show, :edit, :update, :destroy]
-  before_action :ensure_author, only: [:edit, :update, :destroy]
   before_action :load_completed_visits, only: [:new, :create]
 
+  allow_unauthenticated_access only: [:index, :show]
+
   def index
-    @reviews = Review.includes(:user, :property, :visit)
-                     .order(created_at: :desc)
+    authorize Review
+
+    @reviews = policy_scope(Review)
+      .includes(:user, :property, :visit)
+      .order(created_at: :desc)
   end
 
   def show
+    authorize @review
   end
 
   def new
     @review = Review.new(visit_id: params[:visit_id])
+    authorize @review, :new?
   end
 
   def create
@@ -26,6 +32,8 @@ class ReviewsController < ApplicationController
       @review.errors.add(:visit, "must be one of your completed visits")
     end
 
+    authorize @review, :create?
+
     if @review.save
       redirect_to @review, notice: "Review submitted successfully."
     else
@@ -35,9 +43,12 @@ class ReviewsController < ApplicationController
   end
 
   def edit
+    authorize @review
   end
 
   def update
+    authorize @review
+
     if @review.update(review_update_params)
       redirect_to @review, notice: "Review updated successfully."
     else
@@ -47,6 +58,8 @@ class ReviewsController < ApplicationController
   end
 
   def destroy
+    authorize @review
+
     @review.destroy
 
     redirect_to reviews_path,
@@ -60,17 +73,12 @@ class ReviewsController < ApplicationController
     @review = Review.find(params[:id])
   end
 
-  def ensure_author
-    return if @review.user_id == current_user&.id
-
-    redirect_to @review, alert: "Only the reviewer can manage this review."
-  end
-
   def load_completed_visits
     @visits = Visit.completed
-                   .includes(application: [:user, { listing: :property }])
-                   .where(applications: { user_id: current_user&.id })
-                   .order(date_time: :desc)
+      .joins(:application)
+      .includes(application: [:user, { listing: :property }])
+      .where(applications: { user_id: current_user&.id })
+      .order(date_time: :desc)
   end
 
   def review_params

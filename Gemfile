@@ -68,3 +68,5 @@ group :test do
 end
 
 gem "ruby-vips", "~> 2.3"
+
+gem "pundit"

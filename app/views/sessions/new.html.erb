@@ -1,0 +1,49 @@
+<section class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+          <h1 class="h3 mb-4">Sign in to Roomies</h1>
+
+          <%= form_with url: session_path do |form| %>
+
+            <div class="mb-3">
+              <%= form.label :email_address, "Email", class: "form-label" %>
+
+              <%= form.email_field :email_address,
+                                   class: "form-control",
+                                   required: true,
+                                   autofocus: true %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :password, class: "form-label" %>
+
+              <%= form.password_field :password,
+                                      class: "form-control",
+                                      required: true %>
+            </div>
+
+            <%= form.submit "Sign in",
+                            class: "btn btn-primary w-100" %>
+
+          <% end %>
+
+          <div class="text-center mt-3">
+            <%= link_to "Forgot your password?",
+                        new_password_path %>
+          </div>
+
+          <p class="text-center mt-3 mb-0">
+            Don't have an account?
+            <%= link_to "Sign up", new_registration_path %>
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

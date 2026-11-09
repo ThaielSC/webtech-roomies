@@ -37,20 +37,20 @@ end
 
 puts "=== Creando Comodidades (Amenities) ==="
 amenity_names = [
-  "Wi-Fi de alta velocidad (Fibra)",
-  "Lavadora y Secadora",
-  "Calefacción central",
-  "Admite mascotas",
-  "Estacionamiento privado",
-  "Piscina",
-  "Quincho para asados",
-  "Gimnasio equipado",
-  "Conserjería 24/7",
-  "Balcón / Terraza privada",
-  "Cocina totalmente equipada",
-  "Aire acondicionado",
-  "Ascensor",
-  "Bicicletero seguro"
+  "High-Speed Fiber Wi-Fi",
+  "Washer and Dryer",
+  "Central Heating",
+  "Pet Friendly",
+  "Private Parking",
+  "Swimming Pool",
+  "BBQ Area",
+  "Fully Equipped Gym",
+  "24/7 Concierge",
+  "Private Balcony / Terrace",
+  "Fully Equipped Kitchen",
+  "Air Conditioning",
+  "Elevator",
+  "Secure Bicycle Storage"
 ]
 
 amenities = amenity_names.each_with_object({}) do |name, hash|
@@ -206,12 +206,12 @@ prop_providencia = Property.create!(
   shared_spaces: "Living comedor amplio, cocina americana totalmente equipada, terraza con vista a la cordillera y logia con lavadora."
 )
 prop_providencia.amenities << [
-  amenities["Wi-Fi de alta velocidad (Fibra)"],
-  amenities["Lavadora y Secadora"],
-  amenities["Conserjería 24/7"],
-  amenities["Ascensor"],
-  amenities["Balcón / Terraza privada"],
-  amenities["Bicicletero seguro"]
+  amenities["High-Speed Fiber Wi-Fi"],
+  amenities["Washer and Dryer"],
+  amenities["24/7 Concierge"],
+  amenities["Elevator"],
+  amenities["Private Balcony / Terrace"],
+  amenities["Secure Bicycle Storage"]
 ]
 
 # Propiedad 2: Casona en Ñuñoa (Felipe González)
@@ -225,12 +225,12 @@ prop_nunoa_casa = Property.create!(
   shared_spaces: "Patio interior con árboles frutales, quincho techado, sala de estar con chimenea, comedor y cocina espaciosa."
 )
 prop_nunoa_casa.amenities << [
-  amenities["Wi-Fi de alta velocidad (Fibra)"],
-  amenities["Lavadora y Secadora"],
-  amenities["Quincho para asados"],
-  amenities["Admite mascotas"],
-  amenities["Estacionamiento privado"],
-  amenities["Cocina totalmente equipada"]
+  amenities["High-Speed Fiber Wi-Fi"],
+  amenities["Washer and Dryer"],
+  amenities["BBQ Area"],
+  amenities["Pet Friendly"],
+  amenities["Private Parking"],
+  amenities["Fully Equipped Kitchen"]
 ]
 
 # Propiedad 3: Depto artístico en Barrio Lastarria (Valentina Morales)
@@ -244,10 +244,10 @@ prop_lastarria = Property.create!(
   shared_spaces: "Living con piso de parquet patrimonial, balcón colonial con vista a los cafés de la calle, cocina integrada y espacio para trabajo remoto."
 )
 prop_lastarria.amenities << [
-  amenities["Wi-Fi de alta velocidad (Fibra)"],
-  amenities["Cocina totalmente equipada"],
-  amenities["Calefacción central"],
-  amenities["Conserjería 24/7"]
+  amenities["High-Speed Fiber Wi-Fi"],
+  amenities["Fully Equipped Kitchen"],
+  amenities["Central Heating"],
+  amenities["24/7 Concierge"]
 ]
 
 # Propiedad 4: Depto moderno en Las Condes (Matías Concha)
@@ -261,13 +261,13 @@ prop_las_condes = Property.create!(
   shared_spaces: "Living minimalista, terraza panorámica, cocina con encimera de inducción. Edificio cuenta con piscina y gimnasio."
 )
 prop_las_condes.amenities << [
-  amenities["Wi-Fi de alta velocidad (Fibra)"],
-  amenities["Piscina"],
-  amenities["Gimnasio equipado"],
-  amenities["Conserjería 24/7"],
-  amenities["Ascensor"],
-  amenities["Aire acondicionado"],
-  amenities["Estacionamiento privado"]
+  amenities["High-Speed Fiber Wi-Fi"],
+  amenities["Swimming Pool"],
+  amenities["Fully Equipped Gym"],
+  amenities["24/7 Concierge"],
+  amenities["Elevator"],
+  amenities["Air Conditioning"],
+  amenities["Private Parking"]
 ]
 
 # Propiedad 5: Casa taller en Barrio Italia (Ignacia Silva)
@@ -281,10 +281,10 @@ prop_italia = Property.create!(
   shared_spaces: "Patio interior con plantas, taller de arte iluminado, cocina abierta con isla y comedor común."
 )
 prop_italia.amenities << [
-  amenities["Wi-Fi de alta velocidad (Fibra)"],
-  amenities["Admite mascotas"],
-  amenities["Lavadora y Secadora"],
-  amenities["Bicicletero seguro"]
+  amenities["High-Speed Fiber Wi-Fi"],
+  amenities["Pet Friendly"],
+  amenities["Washer and Dryer"],
+  amenities["Secure Bicycle Storage"]
 ]
 
 # Propiedad 6: Depto céntrico en Santiago Centro (Camila Soto)
@@ -298,9 +298,9 @@ prop_centro = Property.create!(
   shared_spaces: "Living compacto y funcional, cocina americana, vista despejada al Parque Forestal."
 )
 prop_centro.amenities << [
-  amenities["Wi-Fi de alta velocidad (Fibra)"],
-  amenities["Conserjería 24/7"],
-  amenities["Ascensor"]
+  amenities["High-Speed Fiber Wi-Fi"],
+  amenities["24/7 Concierge"],
+  amenities["Elevator"]
 ]
 
 puts "=== Creando Publicaciones (Listings) en diversos estados ==="
@@ -627,7 +627,7 @@ puts "=== Dataset de Seed generado exitosamente ==="
 puts "Resumen:"
 puts "  - Barrios: #{Neighborhood.count}"
 puts "  - Comodidades: #{Amenity.count}"
-puts "  - Usuarios: #{User.count} (1 moderador, #{User.where(is_moderator: false).count} regulares)"
+puts "  - Usuarios: #{User.count} (1 moderador, #{User.member.count} regulares)"
 puts "  - Propiedades: #{Property.count}"
 puts "  - Publicaciones: #{Listing.count} (#{Listing.published.count} publicadas)"
 puts "  - Postulaciones: #{Application.count} (#{Application.pending.count} pendientes)"

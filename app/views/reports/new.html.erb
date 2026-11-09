@@ -1,0 +1,45 @@
+<section class="container my-5">
+  <h1>Report a listing</h1>
+
+  <p class="text-muted">
+    Reporting: <strong><%= @listing.title %></strong>
+  </p>
+
+  <%= form_with model: @report do |form| %>
+    <% if @report.errors.any? %>
+      <div class="alert alert-danger">
+        <%= @report.errors.full_messages.to_sentence %>
+      </div>
+    <% end %>
+
+    <%= form.hidden_field :listing_id, value: @listing.id %>
+
+    <div class="mb-3">
+      <%= form.label :reason_category, "Reason", class: "form-label" %>
+      <%= form.select :reason_category,
+                      [
+                        ["Misleading information", "misleading_information"],
+                        ["Inappropriate content", "inappropriate_content"],
+                        ["Suspected scam", "suspected_scam"],
+                        ["Discrimination", "discrimination"],
+                        ["Other", "other"]
+                      ],
+                      { prompt: "Select a reason" },
+                      class: "form-select" %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :details, class: "form-label" %>
+      <%= form.text_area :details,
+                         rows: 5,
+                         class: "form-control",
+                         required: true %>
+    </div>
+
+    <%= form.submit "Submit report", class: "btn btn-warning" %>
+
+    <%= link_to "Cancel",
+                listing_path(@listing),
+                class: "btn btn-outline-secondary" %>
+  <% end %>
+</section>

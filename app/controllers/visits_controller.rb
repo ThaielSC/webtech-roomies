@@ -7,21 +7,32 @@ class VisitsController < ApplicationController
   before_action :load_applications, only: [:new, :create, :edit, :update]
 
   def index
-    @visits = Visit.includes(application: [:user, :listing])
-                   .order(date_time: :desc)
+    authorize Visit
+
+    @visits = policy_scope(Visit)
+      .includes(application: [:user, :listing])
+      .order(date_time: :desc)
   end
 
   def show
+    authorize @visit
   end
 
   def new
     @visit = Visit.new(application_id: params[:application_id])
+    authorize @visit
   end
 
   def create
     @visit = Visit.new(visit_params)
-    @visit.application = @applications.find { |application| application.id == @visit.application_id }
+
+    @visit.application = @applications.find do |application|
+      application.id == @visit.application_id
+    end
+
     @visit.status = :proposed
+
+    authorize @visit
 
     if @visit.save
       redirect_to @visit, notice: "Visit proposed successfully."
@@ -32,9 +43,12 @@ class VisitsController < ApplicationController
   end
 
   def edit
+    authorize @visit
   end
 
   def update
+    authorize @visit
+
     if @visit.update(visit_update_params)
       redirect_to @visit, notice: "Visit updated successfully."
     else
@@ -44,6 +58,8 @@ class VisitsController < ApplicationController
   end
 
   def destroy
+    authorize @visit
+
     if @visit.destroy
       redirect_to visits_path,
                   notice: "Visit deleted successfully.",
@@ -55,28 +71,39 @@ class VisitsController < ApplicationController
   end
 
   def confirm
+    authorize @visit, :confirm?
     change_status(:confirmed, "Visit confirmed successfully.")
   end
 
   def cancel
+    authorize @visit, :cancel?
     change_status(:cancelled, "Visit cancelled successfully.")
   end
 
   def complete
+    authorize @visit, :complete?
     change_status(:completed, "Visit completed successfully.")
   end
 
   private
 
   def set_visit
-    @visit = Visit.find(params[:id])
+    @visit = policy_scope(Visit).find(params[:id])
   end
 
   def load_applications
-    @applications = Application.shortlisted.joins(listing: :property).includes(:user, :listing)
-                               .where(properties: { user_id: current_user&.id })
-                               .order(created_at: :desc).to_a
-    if @visit&.application && @visit.application.listing.property.user_id == current_user&.id
+    @applications = Application.shortlisted
+      .joins(listing: :property)
+      .includes(:user, :listing)
+      .where(
+        "applications.user_id = :user_id OR properties.user_id = :user_id",
+        user_id: current_user&.id
+      )
+      .order(created_at: :desc)
+      .to_a
+
+    if @visit&.application &&
+       @visit.application.listing.property.user_id == current_user&.id
       @applications << @visit.application unless @applications.include?(@visit.application)
     end
   end

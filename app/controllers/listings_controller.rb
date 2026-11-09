@@ -1,24 +1,42 @@
 class ListingsController < ApplicationController
-  before_action :set_listing, only: [:show, :edit, :update, :destroy, :publish, :withdraw, :mark_rented]
-  before_action :ensure_host, only: [:edit, :update, :destroy, :publish, :withdraw, :mark_rented]
-  before_action :load_properties, only: [:new, :create, :edit, :update]
+  allow_unauthenticated_access only: [:index, :show]
+
+  before_action :set_listing,
+                only: [:show, :edit, :update, :destroy, :publish, :withdraw, :mark_rented]
+
+  before_action :load_properties,
+                only: [:new, :create, :edit, :update]
 
   def index
-    @listings = Listing.visible_to(current_user).includes(property: :neighborhood)
+    @listings = policy_scope(Listing)
+                  .includes(property: :neighborhood)
+
+    authorize Listing
   end
 
   def show
-    @application = @listing.applications.find_by(user: current_user) || @listing.applications.build
+    authorize @listing
+
+    @application = if current_user
+                     @listing.applications.find_by(user: current_user) ||
+                       @listing.applications.build
+                   else
+                     @listing.applications.build
+                   end
   end
 
   def new
     @listing = Listing.new(property_id: params[:property_id])
+    authorize @listing
   end
 
   def create
     @listing = Listing.new(listing_params)
+    authorize @listing
+
     @listing.status = :draft
-    @listing.property = Property.where(user: current_user).find_by(id: @listing.property_id)
+    @listing.property = Property.where(user: current_user)
+                                .find_by(id: @listing.property_id)
 
     if @listing.save
       redirect_to @listing, notice: "Listing created successfully."
@@ -29,6 +47,8 @@ class ListingsController < ApplicationController
   end
 
   def publish
+    authorize @listing, :publish?
+
     @listing.publish!
     redirect_to @listing, notice: "Listing published successfully."
   rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
@@ -36,6 +56,8 @@ class ListingsController < ApplicationController
   end
 
   def withdraw
+    authorize @listing, :withdraw?
+
     @listing.withdraw!
     redirect_to @listing, notice: "Listing withdrawn successfully."
   rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
@@ -43,6 +65,8 @@ class ListingsController < ApplicationController
   end
 
   def mark_rented
+    authorize @listing, :mark_rented?
+
     @listing.mark_rented!
     redirect_to @listing, notice: "Listing marked as rented."
   rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => error
@@ -50,11 +74,15 @@ class ListingsController < ApplicationController
   end
 
   def edit
+    authorize @listing
   end
 
   def update
+    authorize @listing
+
     attributes = listing_params
     property_id = attributes[:property_id].presence || @listing.property_id
+
     unless @properties.exists?(id: property_id)
       @listing.errors.add(:property, "must belong to the current host")
       flash.now[:alert] = "Could not update listing."
@@ -70,6 +98,8 @@ class ListingsController < ApplicationController
   end
 
   def destroy
+    authorize @listing
+
     if @listing.destroy
       redirect_to listings_path,
                   notice: "Listing deleted successfully.",
@@ -83,7 +113,9 @@ class ListingsController < ApplicationController
   private
 
   def load_properties
-    @properties = Property.where(user: current_user).includes(:neighborhood).order(:address)
+    @properties = Property.where(user: current_user)
+                          .includes(:neighborhood)
+                          .order(:address)
   end
 
   def listing_params
@@ -103,12 +135,6 @@ class ListingsController < ApplicationController
   end
 
   def set_listing
-    @listing = Listing.visible_to(current_user).find(params[:id])
-  end
-
-  def ensure_host
-    return if @listing.property.user_id == current_user&.id
-
-    redirect_to @listing, alert: "Only the host can manage this listing."
+    @listing = policy_scope(Listing).find(params[:id])
   end
 end
