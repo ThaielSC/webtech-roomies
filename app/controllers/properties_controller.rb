@@ -1,27 +1,47 @@
 class PropertiesController < ApplicationController
-  before_action :set_property, only: [:show, :edit, :update, :destroy]
-  before_action :ensure_host, only: [:edit, :update, :destroy]
-  before_action :load_form_options, only: [:new, :create, :edit, :update]
+  allow_unauthenticated_access only: [:index, :show]
+
+  before_action :set_property,
+                only: [:show, :edit, :update, :destroy]
+
+  before_action :load_form_options,
+                only: [:new, :create, :edit, :update]
 
   def index
-    @properties = Property.includes(:neighborhood, :user).all
+    @properties = policy_scope(Property)
+                    .includes(:neighborhood, :user)
+
+    authorize Property
   end
 
   def show
-    @listings = @property.listings.merge(Listing.visible_to(current_user))
-    @reviewable_visits = Visit.completed
-                             .joins(application: :listing)
-                             .where(listings: { property_id: @property.id }, applications: { user_id: current_user&.id })
-                             .left_joins(:review)
-                             .where(reviews: { id: nil })
+    authorize @property
+
+    @listings = policy_scope(@property.listings)
+
+    @reviewable_visits = if current_user
+                           Visit.completed
+                                .joins(application: :listing)
+                                .where(
+                                  listings: { property_id: @property.id },
+                                  applications: { user_id: current_user.id }
+                                )
+                                .left_joins(:review)
+                                .where(reviews: { id: nil })
+                         else
+                           Visit.none
+                         end
   end
 
   def new
     @property = Property.new
+    authorize @property
   end
 
   def create
     @property = Property.new(property_params)
+    authorize @property
+
     @property.user = current_user
 
     if @property.save
@@ -33,9 +53,12 @@ class PropertiesController < ApplicationController
   end
 
   def edit
+    authorize @property
   end
 
   def update
+    authorize @property
+
     if @property.update(property_params)
       redirect_to @property, notice: "Property updated successfully."
     else
@@ -45,6 +68,8 @@ class PropertiesController < ApplicationController
   end
 
   def destroy
+    authorize @property
+
     if @property.destroy
       redirect_to properties_path,
                   notice: "Property deleted successfully.",
@@ -59,12 +84,6 @@ class PropertiesController < ApplicationController
 
   def set_property
     @property = Property.find(params[:id])
-  end
-
-  def ensure_host
-    return if @property.user_id == current_user&.id
-
-    redirect_to @property, alert: "Only the host can manage this property."
   end
 
   def load_form_options

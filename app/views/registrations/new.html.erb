@@ -1,0 +1,78 @@
+<section class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+          <h1 class="h3 mb-4">Create your account</h1>
+
+          <%= form_with model: @user, url: registration_path do |form| %>
+
+            <% if @user.errors.any? %>
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  <% @user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= form.label :first_name, class: "form-label" %>
+              <%= form.text_field :first_name,
+                                  class: "form-control",
+                                  required: true %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :last_name, class: "form-label" %>
+              <%= form.text_field :last_name,
+                                  class: "form-control",
+                                  required: true %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :email_address, "Email", class: "form-label" %>
+              <%= form.email_field :email_address,
+                                   class: "form-control",
+                                   required: true %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :phone_number, "Phone number", class: "form-label" %>
+              <%= form.telephone_field :phone_number,
+                                       class: "form-control" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :password, class: "form-label" %>
+              <%= form.password_field :password,
+                                      class: "form-control",
+                                      required: true %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :password_confirmation, class: "form-label" %>
+              <%= form.password_field :password_confirmation,
+                                      class: "form-control",
+                                      required: true %>
+            </div>
+
+            <%= form.submit "Create account",
+                            class: "btn btn-primary w-100" %>
+
+          <% end %>
+
+          <p class="text-center mt-3 mb-0">
+            Already have an account?
+            <%= link_to "Sign in", new_session_path %>
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

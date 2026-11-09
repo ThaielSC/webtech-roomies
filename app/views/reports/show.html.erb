@@ -1,0 +1,50 @@
+<section class="container my-5">
+  <%= link_to "← Back to reports",
+              reports_path,
+              class: "btn btn-outline-secondary mb-4" if current_user&.moderator? %>
+
+  <h1>Report #<%= @report.id %></h1>
+
+  <div class="card mt-4">
+    <div class="card-body">
+      <p><strong>Listing:</strong>
+        <%= link_to @report.listing.title,
+                    listing_path(@report.listing) %>
+      </p>
+
+      <p><strong>Reported by:</strong>
+        <%= @report.user.full_name %>
+      </p>
+
+      <p><strong>Reason:</strong>
+        <%= @report.reason_category.humanize %>
+      </p>
+
+      <p><strong>Status:</strong>
+        <%= @report.status.humanize %>
+      </p>
+
+      <p><strong>Details:</strong></p>
+      <p><%= simple_format(@report.details) %></p>
+
+      <% if policy(@report).review? %>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <%= button_to "Mark reviewed",
+                        review_report_path(@report),
+                        method: :patch,
+                        class: "btn btn-primary" %>
+
+          <%= button_to "Dismiss",
+                        dismiss_report_path(@report),
+                        method: :patch,
+                        class: "btn btn-outline-secondary" %>
+
+          <%= button_to "Action taken",
+                        take_action_report_path(@report),
+                        method: :patch,
+                        class: "btn btn-success" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
